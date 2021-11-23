@@ -58,11 +58,6 @@ export const PolicyDetailsForm = memo(() => {
           />
         </h4>
       </EuiText>
-      <EuiText size="xs" color="subdued">
-        <h4>
-          Testing
-        </h4>
-      </EuiText>
 
       <EuiSpacer size="s" />
       <WorkloadProtection />
