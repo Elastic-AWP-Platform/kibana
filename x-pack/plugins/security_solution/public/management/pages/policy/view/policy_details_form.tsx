@@ -9,6 +9,7 @@ import { EuiButtonEmpty, EuiSpacer, EuiText } from '@elastic/eui';
 import React, { memo, useCallback, useState } from 'react';
 import { FormattedMessage } from '@kbn/i18n/react';
 import { i18n } from '@kbn/i18n';
+import { WorkloadProtection } from './policy_forms/protections/workload';
 import { MalwareProtections } from './policy_forms/protections/malware';
 import { MemoryProtection } from './policy_forms/protections/memory';
 import { BehaviorProtection } from './policy_forms/protections/behavior';
@@ -57,8 +58,15 @@ export const PolicyDetailsForm = memo(() => {
           />
         </h4>
       </EuiText>
+      <EuiText size="xs" color="subdued">
+        <h4>
+          Testing
+        </h4>
+      </EuiText>
 
       <EuiSpacer size="s" />
+      <WorkloadProtection />
+      <EuiSpacer size="l" />
       <MalwareProtections />
       <EuiSpacer size="l" />
       {isPlatinumPlus ? <Ransomware /> : <LockedPolicyCard title={LOCKED_CARD_RAMSOMWARE_TITLE} />}

@@ -170,13 +170,19 @@ export type RansomwareProtectionOSes = KeysByValueCriteria<
   { ransomware: ProtectionFields }
 >;
 
+/** Returns an array of the policy OSes that have a workload protection field */
+export type WorkloadProtectionOSes = KeysByValueCriteria<
+  UIPolicyConfig,
+  { workload_protection : ProtectionFields }
+>;
+
 export type PolicyProtection =
   | keyof Pick<
       UIPolicyConfig['windows'],
-      'malware' | 'ransomware' | 'memory_protection' | 'behavior_protection'
+      'malware' | 'ransomware' | 'memory_protection' | 'behavior_protection' | 'workload_protection'
     >
-  | keyof Pick<UIPolicyConfig['mac'], 'malware' | 'behavior_protection' | 'memory_protection'>
-  | keyof Pick<UIPolicyConfig['linux'], 'malware' | 'behavior_protection' | 'memory_protection'>;
+  | keyof Pick<UIPolicyConfig['mac'], 'malware' | 'behavior_protection' | 'memory_protection' | 'workload_protection'>
+  | keyof Pick<UIPolicyConfig['linux'], 'malware' | 'behavior_protection' | 'memory_protection' | 'workload_protection'>;
 
 export type MacPolicyProtection = keyof Pick<UIPolicyConfig['mac'], 'malware'>;
 

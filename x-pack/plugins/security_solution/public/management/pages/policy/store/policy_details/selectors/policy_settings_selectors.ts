@@ -146,6 +146,7 @@ export const policyConfig: (s: PolicyDetailsState) => UIPolicyConfig = createSel
         ransomware: windows.ransomware,
         memory_protection: windows.memory_protection,
         behavior_protection: windows.behavior_protection,
+        workload_protection: windows.workload_protection,
         popup: windows.popup,
         antivirus_registration: windows.antivirus_registration,
       },
@@ -155,6 +156,7 @@ export const policyConfig: (s: PolicyDetailsState) => UIPolicyConfig = createSel
         malware: mac.malware,
         behavior_protection: mac.behavior_protection,
         memory_protection: mac.memory_protection,
+        workload_protection: mac.workload_protection,
         popup: mac.popup,
       },
       linux: {
@@ -163,6 +165,7 @@ export const policyConfig: (s: PolicyDetailsState) => UIPolicyConfig = createSel
         malware: linux.malware,
         behavior_protection: linux.behavior_protection,
         memory_protection: linux.memory_protection,
+        workload_protection: linux.workload_protection,
         popup: linux.popup,
       },
     };

@@ -37,6 +37,10 @@ export const policyFactory = (): PolicyConfig => {
         mode: ProtectionModes.prevent,
         supported: true,
       },
+      workload_protection: {
+        mode: ProtectionModes.off,
+        supported: false,
+      },
       popup: {
         malware: {
           message: '',
@@ -53,6 +57,10 @@ export const policyFactory = (): PolicyConfig => {
         behavior_protection: {
           message: '',
           enabled: true,
+        },
+        workload_protection: {
+          message: '',
+          enabled: false,
         },
       },
       logging: {
@@ -79,6 +87,10 @@ export const policyFactory = (): PolicyConfig => {
         mode: ProtectionModes.prevent,
         supported: true,
       },
+      workload_protection: {
+        mode: ProtectionModes.off,
+        supported: false,
+      },
       popup: {
         malware: {
           message: '',
@@ -91,6 +103,10 @@ export const policyFactory = (): PolicyConfig => {
         memory_protection: {
           message: '',
           enabled: true,
+        },
+        workload_protection: {
+          message: '',
+          enabled: false,
         },
       },
       logging: {
@@ -114,6 +130,10 @@ export const policyFactory = (): PolicyConfig => {
         mode: ProtectionModes.prevent,
         supported: true,
       },
+      workload_protection: {
+        mode: ProtectionModes.prevent,
+        supported: true,
+      },
       popup: {
         malware: {
           message: '',
@@ -124,6 +144,10 @@ export const policyFactory = (): PolicyConfig => {
           enabled: true,
         },
         memory_protection: {
+          message: '',
+          enabled: true,
+        },
+        workload_protection: {
           message: '',
           enabled: true,
         },
@@ -175,6 +199,10 @@ export const policyFactoryWithoutPaidFeatures = (
           message: '',
           enabled: false,
         },
+        workload_protection: {
+          message: '',
+          enabled: false,
+        },
       },
     },
     mac: {
@@ -198,6 +226,10 @@ export const policyFactoryWithoutPaidFeatures = (
           enabled: false,
         },
         behavior_protection: {
+          message: '',
+          enabled: false,
+        },
+        workload_protection: {
           message: '',
           enabled: false,
         },
@@ -226,6 +258,10 @@ export const policyFactoryWithoutPaidFeatures = (
         behavior_protection: {
           message: '',
           enabled: false,
+        },
+        workload_protection: {
+          message: '',
+          enabled: true,
         },
       },
     },

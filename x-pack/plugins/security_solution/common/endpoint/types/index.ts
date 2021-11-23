@@ -908,6 +908,7 @@ export interface PolicyConfig {
     memory_protection: ProtectionFields & SupportedFields;
     behavior_protection: ProtectionFields & SupportedFields;
     ransomware: ProtectionFields & SupportedFields;
+    workload_protection: ProtectionFields & SupportedFields;
     logging: {
       file: string;
     };
@@ -928,6 +929,10 @@ export interface PolicyConfig {
         message: string;
         enabled: boolean;
       };
+      workload_protection: {
+        message: string;
+        enabled: boolean;
+      };
     };
     antivirus_registration: {
       enabled: boolean;
@@ -943,6 +948,7 @@ export interface PolicyConfig {
     malware: ProtectionFields;
     behavior_protection: ProtectionFields & SupportedFields;
     memory_protection: ProtectionFields & SupportedFields;
+    workload_protection: ProtectionFields & SupportedFields;
     popup: {
       malware: {
         message: string;
@@ -953,6 +959,10 @@ export interface PolicyConfig {
         enabled: boolean;
       };
       memory_protection: {
+        message: string;
+        enabled: boolean;
+      };
+      workload_protection: {
         message: string;
         enabled: boolean;
       };
@@ -971,6 +981,7 @@ export interface PolicyConfig {
     malware: ProtectionFields;
     behavior_protection: ProtectionFields & SupportedFields;
     memory_protection: ProtectionFields & SupportedFields;
+    workload_protection: ProtectionFields & SupportedFields;
     popup: {
       malware: {
         message: string;
@@ -981,6 +992,10 @@ export interface PolicyConfig {
         enabled: boolean;
       };
       memory_protection: {
+        message: string;
+        enabled: boolean;
+      };
+      workload_protection: {
         message: string;
         enabled: boolean;
       };
@@ -1008,20 +1023,21 @@ export interface UIPolicyConfig {
     | 'advanced'
     | 'memory_protection'
     | 'behavior_protection'
+    | 'workload_protection'
   >;
   /**
    * Mac-specific policy configuration that is supported via the UI
    */
   mac: Pick<
     PolicyConfig['mac'],
-    'malware' | 'events' | 'popup' | 'advanced' | 'behavior_protection' | 'memory_protection'
+    'malware' | 'events' | 'popup' | 'advanced' | 'behavior_protection' | 'memory_protection' | 'workload_protection'
   >;
   /**
    * Linux-specific policy configuration that is supported via the UI
    */
   linux: Pick<
     PolicyConfig['linux'],
-    'malware' | 'events' | 'popup' | 'advanced' | 'behavior_protection' | 'memory_protection'
+    'malware' | 'events' | 'popup' | 'advanced' | 'behavior_protection' | 'memory_protection' | 'workload_protection'
   >;
 }
 
