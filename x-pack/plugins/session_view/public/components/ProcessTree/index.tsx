@@ -5,11 +5,14 @@
  * 2.0.
  */
 import React, { useRef, useLayoutEffect, useCallback } from 'react';
+import { AutoSizer, InfiniteLoader, List, defaultTableRowRenderer } from 'react-virtualized';
 import { ProcessTreeNode } from '../ProcessTreeNode';
 import { useProcessTree } from './hooks';
 import { ProcessEvent, Process } from '../../../common/types/process_tree';
 import { useScroll } from '../../hooks/use_scroll';
 import { useStyles } from './styles';
+import { useWindowingState } from '../SessionViewPageWindowing/contexts';
+// import { useWindowing } from '../SessionViewPageWindowing/contexts';
 
 interface ProcessTreeDeps {
   // process.entity_id to act as root node (typically a session (or entry session) leader).
@@ -30,6 +33,21 @@ interface ProcessTreeDeps {
   hideOrphans?: boolean;
 }
 
+// const extractProcessCount = (process: Process): number => {
+//   let count = 0;
+//   if (process.getDetails()) {
+//     if (process.children.length > 0) {
+//       for (const proc of process.children) {
+//         count += extractProcessCount(proc);
+//       }
+//     }
+
+//     return count + 1;
+//   }
+
+//   return count;
+// };
+
 export const ProcessTree = ({
   sessionEntityId,
   forward,
@@ -41,12 +59,18 @@ export const ProcessTree = ({
 }: ProcessTreeDeps) => {
   const styles = useStyles();
 
-  const { sessionLeader, orphans, searchResults } = useProcessTree({
+  const windowingState = useWindowingState();
+
+  const { sessionLeader, orphans } = useProcessTree({
     sessionEntityId,
     forward,
     backward,
     searchQuery,
   });
+
+  // const processList = extractProcessCount(sessionLeader);
+
+  // console.log(processList);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const selectionAreaRef = useRef<HTMLDivElement>(null);
@@ -123,7 +147,7 @@ export const ProcessTree = ({
   // TODO: bubble the results up to parent component session_view, and show results navigation
   // navigating should
   // eslint-disable-next-line no-console
-  console.log(searchResults);
+  // console.log(searchResults);
 
   const renderOrphans = () => {
     if (!hideOrphans) {
@@ -139,6 +163,51 @@ export const ProcessTree = ({
       });
     }
   };
+  console.log(sessionLeader.children);
+  if (windowingState && sessionLeader.children.length > 0) {
+    return (
+      <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              ref="ProcessTreeList"
+              height={height}
+              // onRowsRendered={onRowsRendered}
+              rowCount={sessionLeader.children.length}
+              rowHeight={24}
+              rowRenderer={({ index, rowData }) => {
+                console.log(index);
+                return index === 0 ? (
+                  <ProcessTreeNode
+                    isSessionLeader
+                    process={sessionLeader}
+                    onProcessSelected={onProcessSelected}
+                  />
+                ) : (
+                  <ProcessTreeNode
+                    process={sessionLeader.children[index]}
+                    onProcessSelected={onProcessSelected}
+                    depth={2}
+                  />
+                );
+              }}
+              width={width}
+            />
+          )}
+          {/* {sessionLeader && (
+            <ProcessTreeNode
+              isSessionLeader
+              process={sessionLeader}
+              onProcessSelected={onProcessSelected}
+            />
+          )}
+          {renderOrphans()}
+   */}
+        </AutoSizer>
+        <div ref={selectionAreaRef} css={styles.selectionArea} />
+      </div>
+    );
+  }
 
   return (
     <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
