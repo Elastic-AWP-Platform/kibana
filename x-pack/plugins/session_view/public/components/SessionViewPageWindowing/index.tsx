@@ -13,7 +13,7 @@ import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
 import { RECENT_SESSION_ROUTE, BASE_PATH } from '../../../common/constants';
 
-import { SessionView } from '../SessionView';
+import { SessionView } from '../SessionViewWindowing';
 import { ProcessEvent } from '../../../common/types/process_tree';
 import { WindowingProvider } from './contexts';
 
@@ -58,7 +58,7 @@ export const SessionViewPageWindowing = (props: RouteComponentProps) => {
       <EuiPage>
         <EuiPageContent>
           <EuiPageHeader
-            pageTitle="Session View Demo"
+            pageTitle="Session View Windowing"
             iconType="logoKibana"
             description="Session view showing the most recent interactive session."
           />

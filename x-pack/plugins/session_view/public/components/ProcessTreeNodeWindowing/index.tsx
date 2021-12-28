@@ -11,12 +11,21 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useMemo, useRef, useLayoutEffect, useState, useEffect, MouseEvent } from 'react';
+ import React, {
+  useMemo,
+  useRef,
+  useLayoutEffect,
+  useState,
+  useEffect,
+  MouseEvent,
+  useCallback,
+} from 'react';
 import { EuiButton, EuiIcon } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
 import { useStyles, ButtonType } from './styles';
 import { ProcessTreeAlerts } from '../ProcessTreeAlerts';
+// import { useWindowingDispatch } from '../SessionViewPageWindowing/contexts';
 
 interface ProcessDeps {
   process: Process;
@@ -42,6 +51,7 @@ export function ProcessTreeNode({
   const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
   const [alertsExpanded, setAlertsExpanded] = useState(false);
   const { searchMatched } = process;
+  // const dispatch = useWindowingDispatch();
 
   useEffect(() => {
     setChildrenExpanded(isSessionLeader || process.autoExpand);
@@ -62,6 +72,11 @@ export function ProcessTreeNode({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [process.events.length]);
 
+  // const dispatchCallback = useCallback(() => {
+  //   return dispatch ? dispatch({ type: 'increment' }) : () => {};
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [process.id]);
+
   const styles = useStyles({ depth, hasAlerts: !!alerts.length });
 
   useLayoutEffect(() => {
@@ -78,36 +93,43 @@ export function ProcessTreeNode({
     }
   }, [searchMatched, styles.searchHighlight]);
 
+  // useEffect(() => {
+  //   if (processDetails) {
+  //     dispatchCallback();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [dispatchCallback, process.id]);
+
   if (!processDetails) {
     return null;
   }
 
   const { interactive } = processDetails.process;
 
-  const renderChildren = () => {
-    const { children } = process;
+  // const renderChildren = () => {
+  //   const { children } = process;
 
-    if (!childrenExpanded || !children || children.length === 0) {
-      return;
-    }
+  //   if (!childrenExpanded || !children || children.length === 0) {
+  //     return;
+  //   }
 
-    const newDepth = depth + 1;
+  //   const newDepth = depth + 1;
 
-    return (
-      <div css={styles.children}>
-        {children.map((child: Process) => {
-          return (
-            <ProcessTreeNode
-              key={child.id}
-              process={child}
-              depth={newDepth}
-              onProcessSelected={onProcessSelected}
-            />
-          );
-        })}
-      </div>
-    );
-  };
+  //   return (
+  //     <div css={styles.children}>
+  //       {children.map((child: Process) => {
+  //         return (
+  //           <ProcessTreeNode
+  //             key={child.id}
+  //             process={child}
+  //             depth={newDepth}
+  //             onProcessSelected={onProcessSelected}
+  //           />
+  //         );
+  //       })}
+  //     </div>
+  //   );
+  // };
 
   const getExpandedIcon = (expanded: boolean) => {
     return expanded ? 'arrowUp' : 'arrowDown';
@@ -261,7 +283,7 @@ export function ProcessTreeNode({
         </div>
       </div>
       {alertsExpanded && <ProcessTreeAlerts alerts={alerts} />}
-      {renderChildren()}
+      {/* {renderChildren()} */}
     </>
   );
 }
