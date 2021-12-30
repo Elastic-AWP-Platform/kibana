@@ -61,7 +61,7 @@ export const ProcessTree = ({
 
   const windowingState = useWindowingState();
 
-  const { sessionLeader, orphans, sessionLength } = useProcessTree({
+  const { sessionLeader, orphans, flattenedSession } = useProcessTree({
     sessionEntityId,
     forward,
     backward,
@@ -163,8 +163,7 @@ export const ProcessTree = ({
       });
     }
   };
-  console.log('sessionLength', sessionLength);
-  if (windowingState && sessionLength > 0) {
+  if (windowingState && flattenedSession.length > 0) {
     return (
       <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
         <AutoSizer>
@@ -173,10 +172,9 @@ export const ProcessTree = ({
               ref="ProcessTreeList"
               height={height}
               // onRowsRendered={onRowsRendered}
-              rowCount={sessionLength}
+              rowCount={flattenedSession.length}
               rowHeight={24}
               rowRenderer={({ index, rowData }) => {
-                console.log(index);
                 return index === 0 ? (
                   <ProcessTreeNode
                     isSessionLeader
@@ -185,7 +183,7 @@ export const ProcessTree = ({
                   />
                 ) : (
                   <ProcessTreeNode
-                    process={sessionLeader.children[index]}
+                    process={flattenedSession[index]}
                     onProcessSelected={onProcessSelected}
                     depth={2}
                   />

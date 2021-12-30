@@ -4,6 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
+import { flatten } from 'lodash';
 import { Process, ProcessEvent, ProcessMap } from '../../../common/types/process_tree';
 import { ProcessImpl } from './hooks';
 
@@ -121,4 +122,24 @@ export const processNewEvents = (
     backwardDirection
   );
   return autoExpandProcessTree(builtProcessMap);
+};
+
+export const flattenProcessTree = (processMap: ProcessMap, sessionEntityId: string): Process[] => {
+  const processArray: Process[] = [];
+  const parent = processMap[sessionEntityId];
+  processArray.push(parent);
+
+  if (parent.autoExpand) {
+    return processArray.concat(
+      flatten(
+        parent.children.map((child) => {
+          if (child.autoExpand) {
+            return flattenProcessTree(processMap, child.id);
+          }
+          return child;
+        })
+      )
+    );
+  }
+  return processArray;
 };

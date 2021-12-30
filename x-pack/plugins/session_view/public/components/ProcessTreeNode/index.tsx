@@ -38,7 +38,7 @@ export function ProcessTreeNode({
   onProcessSelected,
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
-
+console.log(process.id)
   const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
   const [alertsExpanded, setAlertsExpanded] = useState(false);
   const { searchMatched } = process;

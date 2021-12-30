@@ -14,7 +14,12 @@ import {
   ProcessEvent,
   ProcessMap,
 } from '../../../common/types/process_tree';
-import { processNewEvents, searchProcessTree, autoExpandProcessTree } from './helpers';
+import {
+  processNewEvents,
+  searchProcessTree,
+  autoExpandProcessTree,
+  flattenProcessTree,
+} from './helpers';
 
 interface UseProcessTreeDeps {
   sessionEntityId: string;
@@ -166,14 +171,13 @@ export const useProcessTree = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
+  const flattenedSession = flattenProcessTree(processMap, sessionEntityId);
+
   // return the root session leader process, and a list of orphans
   return {
     sessionLeader: processMap[sessionEntityId],
     orphans,
     searchResults,
-    sessionLength: Object.keys(processMap)
-      .filter((id) => processMap[id].autoExpand)
-      .map((id) => processMap[id].children.length)
-      .reduce((totalLength, childrenLength) => totalLength + childrenLength, 0),
+    flattenedSession,
   };
 };
