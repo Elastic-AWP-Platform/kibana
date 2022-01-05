@@ -77,6 +77,7 @@ export const searchProcessTree = (processMap: ProcessMap, searchQuery: string | 
     for (const processId of Object.keys(processMap)) {
       processMap[processId].searchMatched = null;
       processMap[processId].autoExpand = false;
+      processMap[processId].expanded = false;
     }
   }
 
@@ -94,6 +95,7 @@ export const autoExpandProcessTree = (processMap: ProcessMap) => {
       while (parent && !parentIdSet.has(parent.id)) {
         parentIdSet.add(parent.id);
         parent.autoExpand = true;
+        parent.expanded = true;
         parent = parent.parent;
       }
     }
@@ -124,22 +126,14 @@ export const processNewEvents = (
   return autoExpandProcessTree(builtProcessMap);
 };
 
-export const flattenProcessTree = (processMap: ProcessMap, sessionEntityId: string): Process[] => {
-  const processArray: Process[] = [];
-  const parent = processMap[sessionEntityId];
-  processArray.push(parent);
+export const flattenLeader = (processMap: ProcessMap, sessionEntityId: string): Process[] => {
+  let processArray: Process[] = [];
+  const process = processMap[sessionEntityId];
+  processArray.push(process);
 
-  if (parent.autoExpand) {
-    return processArray.concat(
-      flatten(
-        parent.children.map((child) => {
-          if (child.autoExpand) {
-            return flattenProcessTree(processMap, child.id);
-          }
-          return child;
-        })
-      )
-    );
+  if (process.children.length) {
+    processArray = processArray.concat(process.children);
   }
+
   return processArray;
 };

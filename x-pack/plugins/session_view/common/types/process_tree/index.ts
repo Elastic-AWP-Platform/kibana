@@ -125,7 +125,10 @@ export interface Process {
   children: Process[];
   parent: Process | undefined;
   autoExpand: boolean;
+  expanded: boolean;
+  alertsExpanded: boolean;
   searchMatched: string | null; // either false, or set to searchQuery
+  depth?: number;
   hasOutput(): boolean;
   hasAlerts(): boolean;
   getAlerts(): ProcessEvent[];
@@ -134,6 +137,7 @@ export interface Process {
   getDetails(): ProcessEvent;
   isUserEntered(): boolean;
   getMaxAlertLevel(): number | null;
+  getHeight(isSessionLeader: boolean): number;
 }
 
 export type ProcessMap = {

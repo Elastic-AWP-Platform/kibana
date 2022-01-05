@@ -14,6 +14,7 @@ import {
   ProcessMap,
   User,
 } from '../../types/process_tree';
+import { PROCESS_NODE_BASE_HEIGHT } from '../../constants';
 
 export const mockEvents = [
   {
@@ -432,6 +433,8 @@ export const processMock: Process = {
   events: [],
   children: [],
   autoExpand: false,
+  expanded: false,
+  alertsExpanded: false,
   searchMatched: null,
   parent: undefined,
   hasOutput: () => false,
@@ -466,6 +469,7 @@ export const processMock: Process = {
     } as ProcessEvent),
   isUserEntered: () => false,
   getMaxAlertLevel: () => null,
+  getHeight: () => PROCESS_NODE_BASE_HEIGHT,
 };
 
 export const sessionViewBasicProcessMock: Process = {
@@ -492,6 +496,8 @@ export const mockProcessMap = mockEvents.reduce(
       children: [],
       parent: undefined,
       autoExpand: false,
+      expanded: false,
+      alertsExpanded: false,
       searchMatched: null,
       hasOutput: () => false,
       hasAlerts: () => false,
@@ -501,6 +507,7 @@ export const mockProcessMap = mockEvents.reduce(
       getDetails: () => event,
       isUserEntered: () => false,
       getMaxAlertLevel: () => null,
+      getHeight: () => PROCESS_NODE_BASE_HEIGHT,
     };
     return processMap;
   },

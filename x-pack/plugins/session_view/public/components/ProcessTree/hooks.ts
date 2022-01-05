@@ -29,6 +29,8 @@ export class ProcessImpl implements Process {
   children: Process[];
   parent: Process | undefined;
   autoExpand: boolean;
+  expanded: boolean;
+  alertsExpanded: boolean;
   searchMatched: string | null;
 
   constructor(id: string) {
@@ -36,6 +38,8 @@ export class ProcessImpl implements Process {
     this.events = [];
     this.children = [];
     this.autoExpand = false;
+    this.expanded = false;
+    this.alertsExpanded = false;
     this.searchMatched = null;
   }
 
@@ -103,6 +107,10 @@ export class ProcessImpl implements Process {
   getMaxAlertLevel() {
     // TODO:
     return null;
+  }
+
+  getHeight(isSessionLeader: boolean) {
+    return 24;
   }
 }
 

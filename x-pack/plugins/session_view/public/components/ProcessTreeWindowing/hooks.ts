@@ -15,10 +15,15 @@ import {
   ProcessMap,
 } from '../../../common/types/process_tree';
 import {
+  PROCESS_NODE_BASE_HEIGHT,
+  PROCESS_NODE_ALERT_DETAIL_HEIGHT,
+  PROCESS_NODE_ALERT_DETAIL_PADDING,
+} from '../../../common/constants';
+import {
   processNewEvents,
   searchProcessTree,
   autoExpandProcessTree,
-  flattenProcessTree,
+  flattenLeader,
 } from './helpers';
 
 interface UseProcessTreeDeps {
@@ -34,6 +39,8 @@ export class ProcessImpl implements Process {
   children: Process[];
   parent: Process | undefined;
   autoExpand: boolean;
+  expanded: boolean;
+  alertsExpanded: boolean;
   searchMatched: string | null;
 
   constructor(id: string) {
@@ -41,6 +48,8 @@ export class ProcessImpl implements Process {
     this.events = [];
     this.children = [];
     this.autoExpand = false;
+    this.expanded = false;
+    this.alertsExpanded = false;
     this.searchMatched = null;
   }
 
@@ -109,6 +118,22 @@ export class ProcessImpl implements Process {
     // TODO:
     return null;
   }
+
+  getHeight(isSessionLeader: boolean = false) {
+    const alertsDetailHeight = this.alertsExpanded
+      ? this.getAlerts().length * PROCESS_NODE_ALERT_DETAIL_HEIGHT +
+        PROCESS_NODE_ALERT_DETAIL_PADDING
+      : 0;
+    const selfHeight = PROCESS_NODE_BASE_HEIGHT + alertsDetailHeight;
+
+    if (this.expanded && !isSessionLeader) {
+      return this.children.reduce((cumulativeHeight, child) => {
+        return cumulativeHeight + child.getHeight(false);
+      }, selfHeight);
+    }
+
+    return selfHeight;
+  }
 }
 
 export const useProcessTree = ({
@@ -171,13 +196,13 @@ export const useProcessTree = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  const flattenedSession = flattenProcessTree(processMap, sessionEntityId);
+  const flattenedLeader = flattenLeader(processMap, sessionEntityId);
 
   // return the root session leader process, and a list of orphans
   return {
     sessionLeader: processMap[sessionEntityId],
     orphans,
     searchResults,
-    flattenedSession,
+    flattenedLeader,
   };
 };

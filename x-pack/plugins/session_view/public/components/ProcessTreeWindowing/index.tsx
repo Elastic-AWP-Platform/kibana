@@ -4,7 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useLayoutEffect, useCallback } from 'react';
 import { AutoSizer, InfiniteLoader, List, defaultTableRowRenderer } from 'react-virtualized';
 import { ProcessTreeNode } from '../ProcessTreeNodeWindowing';
 import { useProcessTree } from './hooks';
@@ -57,11 +57,14 @@ export const ProcessTree = ({
   onProcessSelected,
   hideOrphans = true,
 }: ProcessTreeDeps) => {
+  const [, updateState] = useState<object>();
+  const forceUpdate = useCallback(() => updateState({}), []);
+
   const styles = useStyles();
 
   const windowingState = useWindowingState();
 
-  const { sessionLeader, orphans, flattenedSession } = useProcessTree({
+  const { sessionLeader, orphans, flattenedLeader } = useProcessTree({
     sessionEntityId,
     forward,
     backward,
@@ -146,8 +149,6 @@ export const ProcessTree = ({
 
   // TODO: bubble the results up to parent component session_view, and show results navigation
   // navigating should
-  // eslint-disable-next-line no-console
-  // console.log(searchResults);
 
   const renderOrphans = () => {
     if (!hideOrphans) {
@@ -163,7 +164,18 @@ export const ProcessTree = ({
       });
     }
   };
-  if (windowingState && flattenedSession.length > 0) {
+
+  const toggleProcessChildComponent = (process: Process) => {
+    process.expanded = !process.expanded;
+    forceUpdate();
+  };
+
+  const toggleProcessAlerts = (process: Process) => {
+    process.alertsExpanded = !process.alertsExpanded;
+    forceUpdate();
+  };
+
+  if (windowingState && flattenedLeader.length > 0) {
     return (
       <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
         <AutoSizer>
@@ -172,20 +184,30 @@ export const ProcessTree = ({
               ref="ProcessTreeList"
               height={height}
               // onRowsRendered={onRowsRendered}
-              rowCount={flattenedSession.length}
-              rowHeight={24}
-              rowRenderer={({ index, rowData }) => {
+              rowCount={flattenedLeader.length}
+              rowHeight={({ index }) => {
+                // console.log(flattenedLeader[index].alertsExpanded)
+                return flattenedLeader[index].getHeight(
+                  flattenedLeader[index].id === sessionEntityId
+                );
+              }}
+              overscanRowCount={2}
+              rowRenderer={({ index }) => {
                 return index === 0 ? (
                   <ProcessTreeNode
                     isSessionLeader
                     process={sessionLeader}
                     onProcessSelected={onProcessSelected}
+                    onToggleChild={toggleProcessChildComponent}
+                    onToggleAlerts={toggleProcessAlerts}
                   />
                 ) : (
                   <ProcessTreeNode
-                    process={flattenedSession[index]}
+                    process={flattenedLeader[index]}
                     onProcessSelected={onProcessSelected}
-                    depth={2}
+                    depth={1}
+                    onToggleChild={toggleProcessChildComponent}
+                    onToggleAlerts={toggleProcessAlerts}
                   />
                 );
               }}
