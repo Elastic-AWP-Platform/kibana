@@ -189,26 +189,35 @@ export const ProcessTree = ({
               // onRowsRendered={onRowsRendered}
               rowCount={flattenedLeader.length}
               rowHeight={({ index }) => {
-                console.log(index, flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId))
-                return flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
+                console.log(
+                  index,
+                  flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
+                );
+                return flattenedLeader[index].getHeight(
+                  flattenedLeader[index].id === sessionEntityId
+                );
               }}
-              rowRenderer={({ index }) => {
-                return index === 0 ? (
-                  <ProcessTreeNode
-                    isSessionLeader
-                    process={sessionLeader}
-                    onProcessSelected={onProcessSelected}
-                    onToggleChild={toggleProcessChildComponent}
-                    onToggleAlerts={toggleProcessAlerts}
-                  />
-                ) : (
-                  <ProcessTreeNode
-                    process={flattenedLeader[index]}
-                    onProcessSelected={onProcessSelected}
-                    depth={1}
-                    onToggleChild={toggleProcessChildComponent}
-                    onToggleAlerts={toggleProcessAlerts}
-                  />
+              rowRenderer={({ index, style }) => {
+                return (
+                  <div style={style}>
+                    {index === 0 ? (
+                      <ProcessTreeNode
+                        isSessionLeader
+                        process={sessionLeader}
+                        onProcessSelected={onProcessSelected}
+                        onToggleChild={toggleProcessChildComponent}
+                        onToggleAlerts={toggleProcessAlerts}
+                      />
+                    ) : (
+                      <ProcessTreeNode
+                        process={flattenedLeader[index]}
+                        onProcessSelected={onProcessSelected}
+                        depth={1}
+                        onToggleChild={toggleProcessChildComponent}
+                        onToggleAlerts={toggleProcessAlerts}
+                      />
+                    )}
+                  </div>
                 );
               }}
               width={width}
