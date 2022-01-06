@@ -4,7 +4,6 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import { flatten } from 'lodash';
 import { Process, ProcessEvent, ProcessMap } from '../../../common/types/process_tree';
 import { ProcessImpl } from './hooks';
 

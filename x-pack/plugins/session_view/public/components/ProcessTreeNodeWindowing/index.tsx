@@ -11,21 +11,12 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, {
-  useMemo,
-  useRef,
-  useLayoutEffect,
-  useState,
-  useEffect,
-  MouseEvent,
-  useCallback,
-} from 'react';
+import React, { useMemo, useRef, useLayoutEffect, MouseEvent } from 'react';
 import { EuiButton, EuiIcon } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
 import { useStyles, ButtonType } from './styles';
 import { ProcessTreeAlerts } from '../ProcessTreeAlerts';
-// import { useWindowingDispatch } from '../SessionViewPageWindowing/contexts';
 
 interface ProcessDeps {
   process: Process;

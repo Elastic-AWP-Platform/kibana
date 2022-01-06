@@ -4,15 +4,14 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useState, useRef, useLayoutEffect, useCallback } from 'react';
-import { AutoSizer, InfiniteLoader, List, defaultTableRowRenderer } from 'react-virtualized';
+import React, { useRef, useLayoutEffect, useCallback } from 'react';
+import { AutoSizer, List } from 'react-virtualized';
 import { ProcessTreeNode } from '../ProcessTreeNodeWindowing';
 import { useProcessTree } from './hooks';
 import { ProcessEvent, Process } from '../../../common/types/process_tree';
 import { useScroll } from '../../hooks/use_scroll';
 import { useStyles } from './styles';
 import { useWindowingState } from '../SessionViewPageWindowing/contexts';
-// import { useWindowing } from '../SessionViewPageWindowing/contexts';
 
 interface ProcessTreeDeps {
   // process.entity_id to act as root node (typically a session (or entry session) leader).
@@ -33,21 +32,6 @@ interface ProcessTreeDeps {
   height?: number;
   hideOrphans?: boolean;
 }
-
-// const extractProcessCount = (process: Process): number => {
-//   let count = 0;
-//   if (process.getDetails()) {
-//     if (process.children.length > 0) {
-//       for (const proc of process.children) {
-//         count += extractProcessCount(proc);
-//       }
-//     }
-
-//     return count + 1;
-//   }
-
-//   return count;
-// };
 
 export const ProcessTree = ({
   sessionEntityId,
@@ -71,10 +55,6 @@ export const ProcessTree = ({
     backward,
     searchQuery,
   });
-
-  // const processList = extractProcessCount(sessionLeader);
-
-  // console.log(processList);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const selectionAreaRef = useRef<HTMLDivElement>(null);
@@ -189,10 +169,6 @@ export const ProcessTree = ({
               // onRowsRendered={onRowsRendered}
               rowCount={flattenedLeader.length}
               rowHeight={({ index }) => {
-                console.log(
-                  index,
-                  flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
-                );
                 return flattenedLeader[index].getHeight(
                   flattenedLeader[index].id === sessionEntityId
                 );
@@ -223,15 +199,6 @@ export const ProcessTree = ({
               width={width}
             />
           )}
-          {/* {sessionLeader && (
-            <ProcessTreeNode
-              isSessionLeader
-              process={sessionLeader}
-              onProcessSelected={onProcessSelected}
-            />
-          )}
-          {renderOrphans()}
-   */}
         </AutoSizer>
         <div ref={selectionAreaRef} css={styles.selectionArea} />
       </div>
