@@ -11,7 +11,7 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
- import React, {
+import React, {
   useMemo,
   useRef,
   useLayoutEffect,
@@ -58,22 +58,17 @@ export function ProcessTreeNode({
   const processDetails = useMemo(() => {
     return process.getDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  }, [process.id]);
 
   const hasExec = useMemo(() => {
     return process.hasExec();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  }, [process.id]);
 
   const alerts = useMemo(() => {
     return process.getAlerts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
-
-  // const dispatchCallback = useCallback(() => {
-  //   return dispatch ? dispatch({ type: 'increment' }) : () => {};
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [process.id]);
+  }, [process.id]);
 
   const styles = useStyles({ depth, hasAlerts: !!alerts.length, isSessionLeader });
 
@@ -90,13 +85,6 @@ export function ProcessTreeNode({
       textRef.current.innerHTML = html;
     }
   }, [searchMatched, styles.searchHighlight]);
-
-  // useEffect(() => {
-  //   if (processDetails) {
-  //     dispatchCallback();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [dispatchCallback, process.id]);
 
   if (!processDetails) {
     return null;
