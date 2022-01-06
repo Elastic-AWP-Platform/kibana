@@ -63,7 +63,7 @@ export const SessionViewPageWindowing = (props: RouteComponentProps) => {
             description="Session view showing the most recent interactive session."
           />
           <EuiSpacer />
-          {sessionEntityId && <SessionView sessionEntityId={sessionEntityId} />}
+          {sessionEntityId && <SessionView sessionEntityId={sessionEntityId} height={500} />}
           <EuiSpacer />
         </EuiPageContent>
       </EuiPage>

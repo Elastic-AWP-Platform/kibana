@@ -96,6 +96,7 @@ export const SessionView = ({ sessionEntityId, height }: SessionViewDeps) => {
             searchQuery={searchQuery}
             selectedProcess={selectedProcess}
             onProcessSelected={onProcessSelected}
+            height={height}
           />
         </div>
       );

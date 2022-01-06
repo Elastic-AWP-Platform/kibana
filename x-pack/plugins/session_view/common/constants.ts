@@ -19,6 +19,6 @@ export const SESSION_ENTRY_LEADERS_ROUTE = '/internal/session_view/session_entry
 export const TEST_SAVED_OBJECT = 'session_view_test_saved_object';
 
 export const PROCESS_EVENTS_PER_PAGE = 2000;
-export const PROCESS_NODE_BASE_HEIGHT = 24;
+export const PROCESS_NODE_BASE_HEIGHT = 32;
 export const PROCESS_NODE_ALERT_DETAIL_HEIGHT = 145;
 export const PROCESS_NODE_ALERT_DETAIL_PADDING = 13;

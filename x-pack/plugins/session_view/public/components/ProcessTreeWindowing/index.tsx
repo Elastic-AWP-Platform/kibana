@@ -30,6 +30,7 @@ interface ProcessTreeDeps {
   // currently selected process
   selectedProcess?: Process | null;
   onProcessSelected?: (process: Process) => void;
+  height?: number;
   hideOrphans?: boolean;
 }
 
@@ -55,10 +56,9 @@ export const ProcessTree = ({
   searchQuery,
   selectedProcess,
   onProcessSelected,
+  height,
   hideOrphans = true,
 }: ProcessTreeDeps) => {
-  const [, updateState] = useState<object>();
-  const forceUpdate = useCallback(() => updateState({}), []);
   const windowingListRef = useRef<List>(null);
 
   const styles = useStyles();
@@ -182,16 +182,16 @@ export const ProcessTree = ({
     return (
       <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
         <AutoSizer>
-          {({ height, width }) => (
+          {({ width }) => (
             <List
               ref={windowingListRef}
-              height={height}
+              height={height || 0}
               // onRowsRendered={onRowsRendered}
               rowCount={flattenedLeader.length}
-              rowHeight={({ index }) =>
-                flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
-              }
-              // overscanRowCount={2}
+              rowHeight={({ index }) => {
+                console.log(index, flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId))
+                return flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
+              }}
               rowRenderer={({ index }) => {
                 return index === 0 ? (
                   <ProcessTreeNode
