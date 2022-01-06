@@ -59,6 +59,7 @@ export const ProcessTree = ({
 }: ProcessTreeDeps) => {
   const [, updateState] = useState<object>();
   const forceUpdate = useCallback(() => updateState({}), []);
+  const windowingListRef = useRef<List>(null);
 
   const styles = useStyles();
 
@@ -167,12 +168,14 @@ export const ProcessTree = ({
 
   const toggleProcessChildComponent = (process: Process) => {
     process.expanded = !process.expanded;
-    forceUpdate();
+    windowingListRef.current?.recomputeRowHeights();
+    windowingListRef.current?.forceUpdate();
   };
 
   const toggleProcessAlerts = (process: Process) => {
     process.alertsExpanded = !process.alertsExpanded;
-    forceUpdate();
+    windowingListRef.current?.recomputeRowHeights();
+    windowingListRef.current?.forceUpdate();
   };
 
   if (windowingState && flattenedLeader.length > 0) {
@@ -181,17 +184,14 @@ export const ProcessTree = ({
         <AutoSizer>
           {({ height, width }) => (
             <List
-              ref="ProcessTreeList"
+              ref={windowingListRef}
               height={height}
               // onRowsRendered={onRowsRendered}
               rowCount={flattenedLeader.length}
-              rowHeight={({ index }) => {
-                // console.log(flattenedLeader[index].alertsExpanded)
-                return flattenedLeader[index].getHeight(
-                  flattenedLeader[index].id === sessionEntityId
-                );
-              }}
-              overscanRowCount={2}
+              rowHeight={({ index }) =>
+                flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
+              }
+              // overscanRowCount={2}
               rowRenderer={({ index }) => {
                 return index === 0 ? (
                   <ProcessTreeNode
