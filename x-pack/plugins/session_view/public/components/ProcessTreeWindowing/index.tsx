@@ -168,11 +168,9 @@ export const ProcessTree = ({
               height={height || 0}
               // onRowsRendered={onRowsRendered}
               rowCount={flattenedLeader.length}
-              rowHeight={({ index }) => {
-                return flattenedLeader[index].getHeight(
-                  flattenedLeader[index].id === sessionEntityId
-                );
-              }}
+              rowHeight={({ index }) =>
+                flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
+              }
               rowRenderer={({ index, style }) => {
                 return (
                   <div style={style}>
