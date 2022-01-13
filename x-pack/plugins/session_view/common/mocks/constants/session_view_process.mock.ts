@@ -8,6 +8,7 @@
 import {
   Process,
   ProcessEvent,
+  ProcessEventsPage,
   ProcessFields,
   EventAction,
   EventKind,
@@ -16,7 +17,7 @@ import {
 } from '../../types/process_tree';
 import { PROCESS_NODE_BASE_HEIGHT } from '../../constants';
 
-export const mockEvents = [
+const mockEvents = [
   {
     '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
     process: {
@@ -39,11 +40,11 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.210Z')
       },
       session: {
         pid: 2442,
@@ -55,11 +56,11 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.210Z')
       },
       entry: {
         pid: 2442,
@@ -71,17 +72,17 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.210Z')
       },
-      command_line: '',
       name: '',
       args_count: 0,
       args: [],
       working_directory: '/home/vagrant',
+      start: new Date('2021-11-23T15:25:04.210Z')
     },
     event: {
       action: EventAction.fork,
@@ -111,11 +112,11 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.218Z'),
       },
       session: {
         pid: 2442,
@@ -127,11 +128,11 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.218Z'),
       },
       entry: {
         pid: 2442,
@@ -143,17 +144,17 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.218Z'),
       },
-      command_line: '',
       name: '',
       args_count: 2,
       args: ['vi', 'cmd/config.ini'],
       working_directory: '/home/vagrant',
+      start: new Date('2021-11-23T15:25:04.218Z'),
     },
     event: {
       action: EventAction.exec,
@@ -183,11 +184,11 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:05.202Z')
       },
       session: {
         pid: 2442,
@@ -199,11 +200,11 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:05.202Z')
       },
       entry: {
         pid: 2442,
@@ -215,13 +216,13 @@ export const mockEvents = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:05.202Z')
       },
-      command_line: '',
+      start: new Date('2021-11-23T15:25:05.202Z'),
       name: '',
       args_count: 2,
       args: ['vi', 'cmd/config.ini'],
@@ -235,7 +236,7 @@ export const mockEvents = [
   },
 ] as ProcessEvent[];
 
-export const mockAlerts = [
+export const mockAlerts: ProcessEvent[] = [
   {
     kibana: {
       alert: {
@@ -281,11 +282,11 @@ export const mockAlerts = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:26:34.859Z'),
       },
       session: {
         pid: 2442,
@@ -297,11 +298,11 @@ export const mockAlerts = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:26:34.859Z'),
       },
       entry: {
         pid: 2442,
@@ -313,17 +314,17 @@ export const mockAlerts = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:26:34.859Z'),
       },
-      command_line: '',
       name: '',
       args_count: 2,
       args: ['vi', 'cmd/config.ini'],
       working_directory: '/home/vagrant',
+      start: new Date('2021-11-23T15:26:34.859Z'),
     },
     event: {
       action: EventAction.exec,
@@ -376,11 +377,11 @@ export const mockAlerts = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args_count: 2,
         args: ['vi', 'cmd/config.ini'],
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:26:34.860Z'),
       },
       session: {
         pid: 2442,
@@ -392,11 +393,11 @@ export const mockAlerts = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args_count: 2,
         args: ['vi', 'cmd/config.ini'],
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:26:34.860Z'),
       },
       entry: {
         pid: 2442,
@@ -408,17 +409,17 @@ export const mockAlerts = [
         executable: '/usr/bin/bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        command_line: '',
         name: '',
         args_count: 2,
         args: ['vi', 'cmd/config.ini'],
         working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:26:34.860Z'),
       },
-      command_line: '',
       name: '',
       args_count: 2,
       args: ['vi', 'cmd/config.ini'],
       working_directory: '/home/vagrant',
+      start: new Date('2021-11-23T15:26:34.860Z'),
     },
     event: {
       action: EventAction.exit,
@@ -427,6 +428,13 @@ export const mockAlerts = [
     },
   },
 ];
+
+export const mockData: ProcessEventsPage[] = [
+  {
+    events: mockEvents,
+    cursor: '2021-11-23T15:25:04.210Z'
+  }
+]
 
 export const processMock: Process = {
   id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
@@ -443,30 +451,30 @@ export const processMock: Process = {
   hasExec: () => false,
   getOutput: () => '',
   getDetails: () =>
-    ({
-      '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
-      event: {
-        kind: EventKind.event,
-        category: 'process',
-        action: EventAction.exec,
-      },
-      process: {
-        args: [],
-        args_count: 0,
-        command_line: '',
-        entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-        executable: '',
-        interactive: false,
-        name: '',
-        working_directory: '/home/vagrant',
-        pid: 1,
-        pgid: 1,
-        user: {} as User,
-        parent: {} as ProcessFields,
-        session: {} as ProcessFields,
-        entry: {} as ProcessFields,
-      },
-    } as ProcessEvent),
+  ({
+    '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
+    event: {
+      kind: EventKind.event,
+      category: 'process',
+      action: EventAction.exec,
+    },
+    process: {
+      args: [],
+      args_count: 0,
+      entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
+      executable: '',
+      interactive: false,
+      name: '',
+      working_directory: '/home/vagrant',
+      start: new Date('2021-11-23T15:25:04.210Z'),
+      pid: 1,
+      pgid: 1,
+      user: {} as User,
+      parent: {} as ProcessFields,
+      session: {} as ProcessFields,
+      entry: {} as ProcessFields,
+    },
+  } as ProcessEvent),
   isUserEntered: () => false,
   getMaxAlertLevel: () => null,
   getHeight: () => PROCESS_NODE_BASE_HEIGHT,
