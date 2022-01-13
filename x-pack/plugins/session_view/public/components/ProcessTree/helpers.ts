@@ -139,7 +139,25 @@ export const processNewEvents = (
   }
 
   const updatedProcessMap = updateProcessMap(eventsProcessMap, events);
-  const newOrphans = buildProcessTree(updatedProcessMap, events, orphans, sessionEntityId, backwardDirection);
+  const newOrphans = buildProcessTree(
+    updatedProcessMap,
+    events,
+    orphans,
+    sessionEntityId,
+    backwardDirection
+  );
 
   return [autoExpandProcessTree(updatedProcessMap), newOrphans];
+};
+
+export const flattenLeader = (processMap: ProcessMap, sessionEntityId: string): Process[] => {
+  let processArray: Process[] = [];
+  const process = processMap[sessionEntityId];
+  processArray.push(process);
+
+  if (process.children.length) {
+    processArray = processArray.concat(process.children);
+  }
+
+  return processArray;
 };

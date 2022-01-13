@@ -14,6 +14,7 @@ const TREE_INDENT = 32;
 interface StylesDeps {
   depth: number;
   hasAlerts: boolean;
+  isSessionLeader: boolean;
 }
 
 export enum ButtonType {
@@ -23,7 +24,7 @@ export enum ButtonType {
   userChanged = 'user',
 }
 
-export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
+export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => {
   const { euiTheme } = useEuiTheme();
 
   const cached = useMemo(() => {
@@ -115,7 +116,7 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
 
     const { bgColor, borderColor, hoverColor } = getHighlightColors();
 
-    const processNode: CSSObject = {
+    let processNode: CSSObject = {
       display: 'block',
       cursor: 'pointer',
       position: 'relative',
@@ -137,6 +138,10 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
         width: `calc(100% + ${depth * TREE_INDENT}px)`,
       },
     };
+
+    if (!isSessionLeader) {
+      processNode = { ...processNode, ...children };
+    }
 
     const wrapper: CSSObject = {
       paddingLeft: size.s,
@@ -178,7 +183,7 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
       getButtonStyle,
       alertDetails,
     };
-  }, [depth, euiTheme, hasAlerts]);
+  }, [depth, euiTheme, hasAlerts, isSessionLeader]);
 
   return cached;
 };

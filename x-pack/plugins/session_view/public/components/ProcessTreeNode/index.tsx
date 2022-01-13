@@ -26,6 +26,8 @@ interface ProcessDeps {
   isOrphan?: boolean;
   depth?: number;
   onProcessSelected?: (process: Process) => void;
+  onToggleChild?: (process: Process) => void;
+  onToggleAlerts?: (process: Process) => void;
 }
 
 /**
@@ -39,33 +41,40 @@ export function ProcessTreeNode({
   isOrphan,
   depth = 0,
   onProcessSelected,
+  onToggleChild,
+  onToggleAlerts,
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
-console.log(process.id)
-  const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
-  const [alertsExpanded, setAlertsExpanded] = useState(false);
   const { searchMatched } = process;
-
-  useEffect(() => {
-    setChildrenExpanded(isSessionLeader || process.autoExpand);
-  }, [isSessionLeader, process.autoExpand]);
 
   const processDetails = useMemo(() => {
     return process.getDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  }, [process.id]);
 
   const hasExec = useMemo(() => {
     return process.hasExec();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  }, [process.id]);
 
   const alerts = useMemo(() => {
     return process.getAlerts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  }, [process.id]);
 
   const styles = useStyles({ depth, hasAlerts: !!alerts.length });
+
+  const onChildButtonClick = () => {
+    if (onToggleChild) {
+      onToggleChild(process);
+    }
+  };
+
+  const onAlertButtonClick = () => {
+    if (onToggleAlerts) {
+      onToggleAlerts(process);
+    }
+  };
 
   useLayoutEffect(() => {
     if (searchMatched !== null && textRef.current) {
@@ -89,8 +98,9 @@ console.log(process.id)
 
   const renderChildren = () => {
     let { children } = process;
+    const { expanded } = process;
 
-    // we pass an array of orphans to the session leader 
+    // we pass an array of orphans to the session leader
     // for lack of a better approach, we just mix the orphans with its children and re-sort by timestamp.
     // we could just add orphans to the children of the session leader in useProcessTree, but
     // it makes it difficult to re-parent them when their parent actually shows up (e.g in the case of reverse pagination)
@@ -98,7 +108,7 @@ console.log(process.id)
       children = [...children, ...orphans].sort(sortProcesses);
     }
 
-    if (!childrenExpanded || !children || children.length === 0) {
+    if (isSessionLeader || !expanded || !children || children.length === 0) {
       return;
     }
 
@@ -113,6 +123,8 @@ console.log(process.id)
               process={child}
               depth={newDepth}
               onProcessSelected={onProcessSelected}
+              onToggleChild={onToggleChild}
+              onToggleAlerts={onToggleAlerts}
             />
           );
         })}
@@ -125,21 +137,23 @@ console.log(process.id)
   };
 
   const renderButtons = () => {
+    const { children, expanded, alertsExpanded } = process;
+
     const buttons = [];
 
-    if (!isSessionLeader && process.children.length > 0) {
+    if (!isSessionLeader && children.length > 0) {
       buttons.push(
         <EuiButton
           key="child-processes-button"
           css={styles.getButtonStyle(ButtonType.children)}
-          onClick={() => setChildrenExpanded(!childrenExpanded)}
+          onClick={onChildButtonClick}
           data-test-subj="processTreeNodeChildProcessesButton"
         >
           <FormattedMessage
             id="xpack.sessionView.childProcesses"
             defaultMessage="Child processes"
           />
-          <EuiIcon css={styles.buttonArrow} size="s" type={getExpandedIcon(childrenExpanded)} />
+          <EuiIcon css={styles.buttonArrow} size="s" type={getExpandedIcon(expanded)} />
         </EuiButton>
       );
     }
@@ -149,7 +163,7 @@ console.log(process.id)
         <EuiButton
           key="alert-button"
           css={styles.getButtonStyle(ButtonType.alerts)}
-          onClick={() => setAlertsExpanded(!alertsExpanded)}
+          onClick={onAlertButtonClick}
           data-test-subj="processTreeNodeAlertButton"
         >
           <FormattedMessage id="xpack.sessionView.alerts" defaultMessage="Alerts" />
@@ -254,7 +268,7 @@ console.log(process.id)
     onProcessSelected?.(process);
   };
 
-  const id = process.id;
+  const { id, alertsExpanded, expanded } = process;
 
   return (
     <>
@@ -272,7 +286,7 @@ console.log(process.id)
         </div>
       </div>
       {alertsExpanded && <ProcessTreeAlerts alerts={alerts} />}
-      {renderChildren()}
+      {expanded && renderChildren()}
     </>
   );
 }
