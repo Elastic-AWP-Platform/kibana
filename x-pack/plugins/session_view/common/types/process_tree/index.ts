@@ -128,6 +128,7 @@ export interface Process {
   alertsExpanded: boolean;
   searchMatched: string | null; // either false, or set to searchQuery
   depth?: number;
+  isOrphan?: boolean;
   hasOutput(): boolean;
   hasAlerts(): boolean;
   getAlerts(): ProcessEvent[];

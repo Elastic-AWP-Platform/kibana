@@ -11,11 +11,10 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useMemo, useRef, useLayoutEffect, useState, useEffect, MouseEvent } from 'react';
+import React, { useMemo, useRef, useLayoutEffect, MouseEvent } from 'react';
 import { EuiButton, EuiIcon } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
-import { sortProcesses } from '../../../common/utils/sort_processes';
 import { useStyles, ButtonType } from './styles';
 import { ProcessTreeAlerts } from '../ProcessTreeAlerts';
 
@@ -97,16 +96,15 @@ export function ProcessTreeNode({
   const { interactive } = processDetails.process;
 
   const renderChildren = () => {
-    let { children } = process;
-    const { expanded } = process;
+    const { children, expanded } = process;
 
     // we pass an array of orphans to the session leader
     // for lack of a better approach, we just mix the orphans with its children and re-sort by timestamp.
     // we could just add orphans to the children of the session leader in useProcessTree, but
     // it makes it difficult to re-parent them when their parent actually shows up (e.g in the case of reverse pagination)
-    if (orphans) {
-      children = [...children, ...orphans].sort(sortProcesses);
-    }
+    // if (orphans) {
+    //   children = [...children, ...orphans].sort(sortProcesses);
+    // }
 
     if (isSessionLeader || !expanded || !children || children.length === 0) {
       return;
@@ -125,6 +123,7 @@ export function ProcessTreeNode({
               onProcessSelected={onProcessSelected}
               onToggleChild={onToggleChild}
               onToggleAlerts={onToggleAlerts}
+              isOrphan={child.isOrphan}
             />
           );
         })}

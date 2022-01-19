@@ -196,7 +196,7 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  const flattenedLeader = flattenLeader(processMap, sessionEntityId);
+  const flattenedLeader = flattenLeader(processMap, sessionEntityId, orphans);
 
   // return the root session leader process, and a list of orphans
   return {

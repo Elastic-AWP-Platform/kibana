@@ -14,7 +14,7 @@ const TREE_INDENT = 32;
 interface StylesDeps {
   depth: number;
   hasAlerts: boolean;
-  isSessionLeader: boolean;
+  isSessionLeader?: boolean;
 }
 
 export enum ButtonType {

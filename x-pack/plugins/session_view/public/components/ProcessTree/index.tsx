@@ -11,7 +11,6 @@ import { FormattedMessage } from '@kbn/i18n-react';
 import { ProcessTreeNode } from '../ProcessTreeNode';
 import { useProcessTree } from './hooks';
 import { Process, ProcessEventsPage, ProcessEvent } from '../../../common/types/process_tree';
-import { useScroll } from '../../hooks/use_scroll';
 import { useStyles } from './styles';
 
 type FetchFunction = () => void;
@@ -56,7 +55,7 @@ export const ProcessTree = ({
 
   const windowingListRef = useRef<List>(null);
 
-  const { sessionLeader, processMap, orphans, flattenedLeader, searchResults } = useProcessTree({
+  const { sessionLeader, processMap, flattenedLeader, searchResults } = useProcessTree({
     sessionEntityId,
     data,
     searchQuery,
@@ -64,15 +63,6 @@ export const ProcessTree = ({
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const selectionAreaRef = useRef<HTMLDivElement>(null);
-
-  // useScroll({
-  //   div: windowingListRef.current,
-  //   handler: (pos: number, endReached: boolean) => {
-  //     if (!isFetching && endReached) {
-  //       fetchNextPage();
-  //     }
-  //   },
-  // });
 
   /**
    * highlights a process in the tree
@@ -199,6 +189,7 @@ export const ProcessTree = ({
                         depth={1}
                         onToggleChild={toggleProcessChildComponent}
                         onToggleAlerts={toggleProcessAlerts}
+                        isOrphan={flattenedLeader[index].isOrphan}
                       />
                     )}
                   </div>

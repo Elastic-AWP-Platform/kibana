@@ -33,9 +33,6 @@ const Links = () => {
         <Link to="/process_tree">Process Tree</Link>
       </li>
       <li css={listItemCss}>
-        <Link to="/process_tree_windowing">Process Tree (Windowing)</Link>
-      </li>
-      <li css={listItemCss}>
         <Link to="/session_leader_table">Session Leader Table</Link>
       </li>
     </ul>

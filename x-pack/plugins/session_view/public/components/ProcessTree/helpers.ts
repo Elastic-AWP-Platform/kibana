@@ -56,6 +56,7 @@ export const buildProcessTree = (
       if (backwardDirection) {
         orphans?.unshift(process);
       } else {
+        process.isOrphan = true;
         orphans?.push(process);
       }
     }
@@ -64,17 +65,16 @@ export const buildProcessTree = (
   const newOrphans: Process[] = [];
 
   // with this new page of events processed, lets try re-parent any orphans
-  orphans?.forEach((process) => {
-    const parentProcess = processMap[process.getDetails().process.parent.entity_id];
+  // orphans?.forEach((process) => {
+  //   const parentProcess = processMap[process.getDetails().process.parent.entity_id];
 
-    if (parentProcess) {
-      process.parent = parentProcess; // handy for recursive operations (like auto expand)
-
-      parentProcess.children.push(process);
-    } else {
-      newOrphans.push(process);
-    }
-  });
+  //   if (parentProcess) {
+  //     process.parent = parentProcess; // handy for recursive operations (like auto expand)
+  //     parentProcess.children.push(process);
+  //   } else {
+  //     newOrphans.push(process);
+  //   }
+  // });
 
   return newOrphans;
 };
@@ -150,13 +150,21 @@ export const processNewEvents = (
   return [autoExpandProcessTree(updatedProcessMap), newOrphans];
 };
 
-export const flattenLeader = (processMap: ProcessMap, sessionEntityId: string): Process[] => {
+export const flattenLeader = (
+  processMap: ProcessMap,
+  sessionEntityId: string,
+  orphans: Process[]
+): Process[] => {
   let processArray: Process[] = [];
   const process = processMap[sessionEntityId];
   processArray.push(process);
 
   if (process.children.length) {
     processArray = processArray.concat(process.children);
+  }
+
+  if (orphans.length) {
+    processArray = processArray.concat(orphans);
   }
 
   return processArray;
