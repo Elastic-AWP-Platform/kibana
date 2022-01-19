@@ -66,18 +66,19 @@ export const buildProcessTree = (
 
   // commenting this out as this is being handled by the flattenLeader function, but need tests
   // with this new page of events processed, lets try re-parent any orphans
-  // orphans?.forEach((process) => {
-  //   const parentProcess = processMap[process.getDetails().process.parent.entity_id];
+  /*
+  orphans?.forEach((process) => {
+    const parentProcess = processMap[process.getDetails().process.parent.entity_id];
 
-  //   if (parentProcess) {
-  //     process.parent = parentProcess; // handy for recursive operations (like auto expand)
+    if (parentProcess) {
+      process.parent = parentProcess; // handy for recursive operations (like auto expand)
 
-  //     parentProcess.children.push(process);
-  //   } else {
-  //     newOrphans.push(process);
-  //   }
-  // });
-
+      parentProcess.children.push(process);
+    } else {
+      newOrphans.push(process);
+    }
+  });
+*/
   return newOrphans;
 };
 
