@@ -98,14 +98,6 @@ export function ProcessTreeNode({
   const renderChildren = () => {
     const { children, expanded } = process;
 
-    // we pass an array of orphans to the session leader
-    // for lack of a better approach, we just mix the orphans with its children and re-sort by timestamp.
-    // we could just add orphans to the children of the session leader in useProcessTree, but
-    // it makes it difficult to re-parent them when their parent actually shows up (e.g in the case of reverse pagination)
-    // if (orphans) {
-    //   children = [...children, ...orphans].sort(sortProcesses);
-    // }
-
     if (isSessionLeader || !expanded || !children || children.length === 0) {
       return;
     }
