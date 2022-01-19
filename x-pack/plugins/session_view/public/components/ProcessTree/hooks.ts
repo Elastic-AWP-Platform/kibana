@@ -161,14 +161,12 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
   useEffect(() => {
     let eventsProcessMap: ProcessMap = processMap;
     let newOrphans: Process[] = orphans;
-    let newProcessedPages: ProcessEventsPage[] = [];
+    const newProcessedPages: ProcessEventsPage[] = [];
 
     data.forEach((page, i) => {
-      const processed = processedPages.find((processed) => processed.cursor === page.cursor);
+      const processed = processedPages.find((p) => p.cursor === page.cursor);
 
       if (!processed) {
-        console.log('processing page of events');
-
         const backwards = i < processedPages.length;
 
         const result = processNewEvents(

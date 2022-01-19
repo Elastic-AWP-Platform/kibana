@@ -129,6 +129,7 @@ export const ProcessTree = ({
     if (searchResults.length > 0) {
       selectProcess(searchResults[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResults]);
 
   useEffect(() => {
@@ -139,6 +140,7 @@ export const ProcessTree = ({
         selectProcess(process);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jumpToEvent, processMap]);
 
   const toggleProcessChildComponent = (process: Process) => {

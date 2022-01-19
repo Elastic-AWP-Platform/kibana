@@ -44,7 +44,7 @@ const mockEvents = [
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
-        start: new Date('2021-11-23T15:25:04.210Z')
+        start: new Date('2021-11-23T15:25:04.210Z'),
       },
       session: {
         pid: 2442,
@@ -60,7 +60,7 @@ const mockEvents = [
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
-        start: new Date('2021-11-23T15:25:04.210Z')
+        start: new Date('2021-11-23T15:25:04.210Z'),
       },
       entry: {
         pid: 2442,
@@ -76,13 +76,13 @@ const mockEvents = [
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
-        start: new Date('2021-11-23T15:25:04.210Z')
+        start: new Date('2021-11-23T15:25:04.210Z'),
       },
       name: '',
       args_count: 0,
       args: [],
       working_directory: '/home/vagrant',
-      start: new Date('2021-11-23T15:25:04.210Z')
+      start: new Date('2021-11-23T15:25:04.210Z'),
     },
     event: {
       action: EventAction.fork,
@@ -188,7 +188,7 @@ const mockEvents = [
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
-        start: new Date('2021-11-23T15:25:05.202Z')
+        start: new Date('2021-11-23T15:25:05.202Z'),
       },
       session: {
         pid: 2442,
@@ -204,7 +204,7 @@ const mockEvents = [
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
-        start: new Date('2021-11-23T15:25:05.202Z')
+        start: new Date('2021-11-23T15:25:05.202Z'),
       },
       entry: {
         pid: 2442,
@@ -220,7 +220,7 @@ const mockEvents = [
         args: [],
         args_count: 0,
         working_directory: '/home/vagrant',
-        start: new Date('2021-11-23T15:25:05.202Z')
+        start: new Date('2021-11-23T15:25:05.202Z'),
       },
       start: new Date('2021-11-23T15:25:05.202Z'),
       name: '',
@@ -432,9 +432,9 @@ export const mockAlerts: ProcessEvent[] = [
 export const mockData: ProcessEventsPage[] = [
   {
     events: mockEvents,
-    cursor: '2021-11-23T15:25:04.210Z'
-  }
-]
+    cursor: '2021-11-23T15:25:04.210Z',
+  },
+];
 
 export const processMock: Process = {
   id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
@@ -451,30 +451,30 @@ export const processMock: Process = {
   hasExec: () => false,
   getOutput: () => '',
   getDetails: () =>
-  ({
-    '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
-    event: {
-      kind: EventKind.event,
-      category: 'process',
-      action: EventAction.exec,
-    },
-    process: {
-      args: [],
-      args_count: 0,
-      entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
-      executable: '',
-      interactive: false,
-      name: '',
-      working_directory: '/home/vagrant',
-      start: new Date('2021-11-23T15:25:04.210Z'),
-      pid: 1,
-      pgid: 1,
-      user: {} as User,
-      parent: {} as ProcessFields,
-      session: {} as ProcessFields,
-      entry: {} as ProcessFields,
-    },
-  } as ProcessEvent),
+    ({
+      '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
+      event: {
+        kind: EventKind.event,
+        category: 'process',
+        action: EventAction.exec,
+      },
+      process: {
+        args: [],
+        args_count: 0,
+        entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
+        executable: '',
+        interactive: false,
+        name: '',
+        working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:04.210Z'),
+        pid: 1,
+        pgid: 1,
+        user: {} as User,
+        parent: {} as ProcessFields,
+        session: {} as ProcessFields,
+        entry: {} as ProcessFields,
+      },
+    } as ProcessEvent),
   isUserEntered: () => false,
   getMaxAlertLevel: () => null,
   getHeight: () => PROCESS_NODE_BASE_HEIGHT,
