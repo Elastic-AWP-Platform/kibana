@@ -183,7 +183,7 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => 
       getButtonStyle,
       alertDetails,
     };
-  }, [depth, euiTheme, hasAlerts]);
+  }, [depth, euiTheme, hasAlerts, isSessionLeader]);
 
   return cached;
 };
