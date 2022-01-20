@@ -52,7 +52,7 @@ export const useFetchSessionViewProcessEvents = (
         }
       },
       getPreviousPageParam: (firstPage, pages) => {
-        if (jumpToEvent && firstPage.events.length === PROCESS_EVENTS_PER_PAGE) {
+        if (jumpToEvent && firstPage.events.length <= PROCESS_EVENTS_PER_PAGE) {
           return {
             cursor: firstPage.events[0]['@timestamp'],
             forward: false,
