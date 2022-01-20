@@ -127,7 +127,10 @@ export const ProcessTree = ({
       const process = processMap[jumpToEvent.process.entity_id];
 
       if (process) {
-        selectProcess(process);
+        onProcessSelected?.(process);
+        windowingListRef.current?.scrollToRow(
+          flattenedLeader.findIndex((p) => p.id === jumpToEvent.process.entity_id)
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,6 +162,7 @@ export const ProcessTree = ({
         <AutoSizer>
           {({ width }) => (
             <List
+              scrollToAlignment="center"
               onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
                 const endReached = scrollTop + clientHeight > scrollHeight - 100;
                 if (!isFetching && endReached) {
