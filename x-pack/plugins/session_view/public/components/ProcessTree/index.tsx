@@ -32,7 +32,7 @@ interface ProcessTreeDeps {
   searchQuery?: string;
 
   // currently selected process
-  selectedProcess?: Process | null;
+  selectedProcess?: Process;
   height?: number;
   onProcessSelected?: (process: Process) => void;
 }
@@ -64,60 +64,10 @@ export const ProcessTree = ({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const selectionAreaRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * highlights a process in the tree
-   * we do it this way to avoid state changes on potentially thousands of <Process> components
-   */
-  const selectProcess = useCallback((process: Process) => {
-    if (!selectionAreaRef || !scrollerRef) {
-      return;
-    }
-
-    if (!selectionAreaRef.current || !scrollerRef.current) {
-      return;
-    }
-
-    const selectionAreaEl = selectionAreaRef.current;
-    selectionAreaEl.style.display = 'block';
-
-    // TODO: concept of alert level unknown wrt to elastic security
-    const alertLevel = process.getMaxAlertLevel();
-
-    if (alertLevel && alertLevel >= 0) {
-      selectionAreaEl.style.backgroundColor =
-        alertLevel > 0 ? 'rgba(229, 115, 115, 0.24)' : '#F2C94C4A';
-    } else {
-      selectionAreaEl.style.backgroundColor = '';
-    }
-
-    // find the DOM element for the command which is selected by id
-    const processEl = scrollerRef.current.querySelector<HTMLElement>(`[data-id="${process.id}"]`);
-
-    if (processEl) {
-      processEl.prepend(selectionAreaEl);
-
-      const cTop = scrollerRef.current.scrollTop;
-      const cBottom = cTop + scrollerRef.current.clientHeight;
-
-      const eTop = processEl.offsetTop;
-      const eBottom = eTop + processEl.clientHeight;
-      const isVisible = eTop >= cTop && eBottom <= cBottom;
-
-      if (!isVisible) {
-        processEl.scrollIntoView({ block: 'center' });
-      }
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    if (selectedProcess) {
-      selectProcess(selectedProcess);
-    }
-  }, [selectedProcess, selectProcess]);
-
   useEffect(() => {
     if (searchResults.length > 0) {
-      selectProcess(searchResults[0]);
+      // selectProcess(searchResults[0]);
+      onProcessSelected?.(searchResults[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResults]);
@@ -185,6 +135,7 @@ export const ProcessTree = ({
                         onProcessSelected={onProcessSelected}
                         onToggleChild={toggleProcessChildComponent}
                         onToggleAlerts={toggleProcessAlerts}
+                        selectedProcess={selectedProcess}
                       />
                     ) : (
                       <ProcessTreeNode
@@ -194,6 +145,7 @@ export const ProcessTree = ({
                         onToggleChild={toggleProcessChildComponent}
                         onToggleAlerts={toggleProcessAlerts}
                         isOrphan={flattenedLeader[index].isOrphan}
+                        selectedProcess={selectedProcess}
                       />
                     )}
                   </div>

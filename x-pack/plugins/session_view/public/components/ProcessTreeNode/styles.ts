@@ -15,6 +15,7 @@ interface StylesDeps {
   depth: number;
   hasAlerts: boolean;
   isSessionLeader?: boolean;
+  isSelected?: boolean;
 }
 
 export enum ButtonType {
@@ -24,7 +25,7 @@ export enum ButtonType {
   userChanged = 'user',
 }
 
-export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => {
+export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: StylesDeps) => {
   const { euiTheme } = useEuiTheme();
 
   const cached = useMemo(() => {
@@ -102,12 +103,14 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => 
      */
     const getHighlightColors = () => {
       let bgColor = 'none';
-      const hoverColor = '#6B5FC6';
+      const hoverColor = 'rgba(0, 119, 204, 0.12)';
       let borderColor = 'transparent';
 
-      // TODO: alerts highlight colors
+      if (isSelected) {
+        bgColor = 'rgba(0, 119, 204, 0.08);';
+      }
+
       if (hasAlerts) {
-        bgColor = 'rgba(189, 39, 30, 0.04)';
         borderColor = 'rgba(189, 39, 30, 0.48)';
       }
 
@@ -124,7 +127,6 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => 
         marginTop: size.s,
       },
       '&:hover:before': {
-        opacity: 0.24,
         backgroundColor: hoverColor,
       },
       '&:before': {
@@ -132,10 +134,10 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => 
         height: '100%',
         pointerEvents: 'none',
         content: `''`,
-        marginLeft: `-${depth * TREE_INDENT}px`,
+        marginLeft: `-${depth * TREE_INDENT - 4}px`,
         borderLeft: `4px solid ${borderColor}`,
         backgroundColor: bgColor,
-        width: `calc(100% + ${depth * TREE_INDENT}px)`,
+        width: `calc(100% + ${depth * TREE_INDENT - 4}px)`,
       },
     };
 
@@ -183,7 +185,7 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader }: StylesDeps) => 
       getButtonStyle,
       alertDetails,
     };
-  }, [depth, euiTheme, hasAlerts, isSessionLeader]);
+  }, [depth, euiTheme, hasAlerts, isSessionLeader, isSelected]);
 
   return cached;
 };
