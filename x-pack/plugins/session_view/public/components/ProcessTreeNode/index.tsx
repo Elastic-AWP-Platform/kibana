@@ -11,7 +11,7 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useMemo, useRef, useLayoutEffect, MouseEvent } from 'react';
+import React, { useRef, useLayoutEffect, MouseEvent } from 'react';
 import { EuiButton, EuiIcon } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
@@ -21,9 +21,9 @@ import { ProcessTreeAlerts } from '../ProcessTreeAlerts';
 interface ProcessDeps {
   process: Process;
   isSessionLeader?: boolean;
-  orphans?: Process[];
   isOrphan?: boolean;
   depth?: number;
+  selectedProcess?: Process;
   onProcessSelected?: (process: Process) => void;
   onToggleChild?: (process: Process) => void;
   onToggleAlerts?: (process: Process) => void;
@@ -36,32 +36,26 @@ interface ProcessDeps {
 export function ProcessTreeNode({
   process,
   isSessionLeader = false,
-  orphans,
   isOrphan,
   depth = 0,
   onProcessSelected,
   onToggleChild,
   onToggleAlerts,
+  selectedProcess,
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
   const { searchMatched } = process;
+  const processDetails = process.getDetails();
 
-  const processDetails = useMemo(() => {
-    return process.getDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.id]);
+  const hasExec = process.hasExec();
 
-  const hasExec = useMemo(() => {
-    return process.hasExec();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.id]);
+  const alerts = process.getAlerts();
 
-  const alerts = useMemo(() => {
-    return process.getAlerts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.id]);
-
-  const styles = useStyles({ depth, hasAlerts: !!alerts.length });
+  const styles = useStyles({
+    depth,
+    hasAlerts: !!alerts.length,
+    isSelected: selectedProcess?.id === process.id,
+  });
 
   const onChildButtonClick = () => {
     if (onToggleChild) {
@@ -89,7 +83,7 @@ export function ProcessTreeNode({
     }
   }, [searchMatched, styles.searchHighlight]);
 
-  if (!processDetails) {
+  if (!processDetails?.process) {
     return null;
   }
 
@@ -116,6 +110,7 @@ export function ProcessTreeNode({
               onToggleChild={onToggleChild}
               onToggleAlerts={onToggleAlerts}
               isOrphan={child.isOrphan}
+              selectedProcess={selectedProcess}
             />
           );
         })}
