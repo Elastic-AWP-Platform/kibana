@@ -1162,7 +1162,7 @@ export const sessionViewProcessEventsMock = {
           '__internal_rule_id:472d9de6-01fd-489f-9783-42773114fe8f',
           '__internal_immutable:false',
         ],
-        '@timestamp': '2021-11-23T13:41:46.768Z',
+        '@timestamp': '2021-11-23T13:41:46.769Z',
         process: {
           pid: 51731,
           pgid: 51731,
