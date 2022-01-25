@@ -7,12 +7,7 @@
 
 import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import React from 'react';
-import { ProcessEvent } from '../../../common/types/process_tree';
-import {
-  sessionViewSessionEntityId,
-  sessionViewProcessEventsMock,
-  sessionViewJumpToEvent,
-} from '../../../common/mocks/responses/session_view_process_events.mock';
+import { sessionViewProcessEventsMock } from '../../../common/mocks/responses/session_view_process_events.mock';
 import { AppContextTestRender, createAppRootMockRenderer } from '../../test';
 import { SessionView } from './index';
 
@@ -29,7 +24,7 @@ describe('SessionView component', () => {
     mockedApi = mockedContext.coreStart.http.get;
     render = (props = {}) =>
       (renderResult = mockedContext.render(
-        <SessionView sessionEntityId={sessionViewSessionEntityId} {...props} />
+        <SessionView sessionEntityId="ae06c110-ad2d-5830-b47c-08ad62f1734c" {...props} />
       ));
   });
 
@@ -91,7 +86,12 @@ describe('SessionView component', () => {
       });
 
       it('should jump To Event', async () => {
-        const jumpToEvent = sessionViewJumpToEvent as unknown as ProcessEvent;
+        const jumpToEvent = {
+          '@timestamp': new Date('2021-11-23T13:41:46.768Z'),
+          process: {
+            entity_id: '85752b94-1c86-5540-9a61-743429d5a206',
+          },
+        };
 
         const sessionView = render({ jumpToEvent });
         await waitForApiCall();
