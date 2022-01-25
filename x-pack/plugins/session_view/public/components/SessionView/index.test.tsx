@@ -7,12 +7,17 @@
 
 import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import React from 'react';
-import { sessionViewProcessEventsMock } from '../../../common/mocks/responses/session_view_process_events.mock';
+import { ProcessEvent } from '../../../common/types/process_tree';
+import {
+  sessionViewSessionEntityId,
+  sessionViewProcessEventsMock,
+  sessionViewJumpToEvent,
+} from '../../../common/mocks/responses/session_view_process_events.mock';
 import { AppContextTestRender, createAppRootMockRenderer } from '../../test';
 import { SessionView } from './index';
 
 describe('SessionView component', () => {
-  let render: () => ReturnType<AppContextTestRender['render']>;
+  let render: (props?: any) => ReturnType<AppContextTestRender['render']>;
   let renderResult: ReturnType<typeof render>;
   let mockedContext: AppContextTestRender;
   let mockedApi: AppContextTestRender['coreStart']['http']['get'];
@@ -22,8 +27,10 @@ describe('SessionView component', () => {
   beforeEach(() => {
     mockedContext = createAppRootMockRenderer();
     mockedApi = mockedContext.coreStart.http.get;
-    render = () =>
-      (renderResult = mockedContext.render(<SessionView sessionEntityId="test-entity-id" />));
+    render = (props = {}) =>
+      (renderResult = mockedContext.render(
+        <SessionView sessionEntityId={sessionViewSessionEntityId} {...props} />
+      ));
   });
 
   describe('When SessionView is mounted', () => {
@@ -81,6 +88,16 @@ describe('SessionView component', () => {
         await waitForApiCall();
 
         expect(renderResult.getAllByTestId('processTreeNode')).toBeTruthy();
+      });
+
+      it('should jump To Event', async () => {
+        const jumpToEvent = sessionViewJumpToEvent as unknown as ProcessEvent;
+
+        const sessionView = render({ jumpToEvent });
+        await waitForApiCall();
+        expect(
+          sessionView.getByTestId(`processTreeNodeRow-${jumpToEvent.process.entity_id}`)
+        ).toBeInTheDocument();
       });
     });
   });

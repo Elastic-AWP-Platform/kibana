@@ -4,7 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import { EuiButton } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
@@ -151,7 +151,7 @@ export const ProcessTree = ({
                   </div>
                 );
               }}
-              width={width}
+              width={width || 800}
             />
           )}
         </AutoSizer>

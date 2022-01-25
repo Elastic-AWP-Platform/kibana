@@ -265,7 +265,11 @@ export function ProcessTreeNode({
         data-test-subj="processTreeNode"
       >
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-        <div data-test-subj="processTreeNodeRow" css={styles.wrapper} onClick={onProcessClicked}>
+        <div
+          data-test-subj={`processTreeNodeRow-${id}`}
+          css={styles.wrapper}
+          onClick={onProcessClicked}
+        >
           {isSessionLeader ? renderSessionLeader() : renderProcess()}
           {renderRootEscalation()}
           {renderButtons()}
