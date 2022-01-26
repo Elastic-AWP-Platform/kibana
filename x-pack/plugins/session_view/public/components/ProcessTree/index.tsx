@@ -113,7 +113,7 @@ export const ProcessTree = ({
 
   const renderWindowedProcessTree = (reduceHeightPrev: number, reduceHeightNext: number) => {
     return (
-      <div data-test-subj="sessionViewProcessTree">
+      <div css={styles.scroller} data-test-subj="sessionViewProcessTree">
         <AutoSizer>
           {({ width }) => (
             <List
