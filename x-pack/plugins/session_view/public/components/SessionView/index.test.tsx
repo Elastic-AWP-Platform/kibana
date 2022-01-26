@@ -83,11 +83,7 @@ describe('SessionView component', () => {
         render();
         await waitForApiCall();
 
-        expect(renderResult.getAllByTestId('processTreeNode')).toBeTruthy();
-
-        const selectionArea = renderResult.queryByTestId('processTreeSelectionArea');
-
-        expect(selectionArea?.parentElement?.getAttribute('data-id')).toEqual('test-entity-id');
+        expect(renderResult.getAllByTestId('processTreeNode')[0]).toMatchSnapshot();
       });
 
       it('should toggle detail panel visibilty when detail button clicked', async () => {
