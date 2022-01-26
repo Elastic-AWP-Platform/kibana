@@ -42,7 +42,6 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
     `;
 
     const children: CSSObject = {
-      position: 'relative',
       color: colors.ghost,
       marginLeft: '16px',
       paddingLeft: '8px',

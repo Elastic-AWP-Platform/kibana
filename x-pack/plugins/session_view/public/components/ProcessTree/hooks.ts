@@ -26,6 +26,7 @@ import {
   autoExpandProcessTree,
   flattenLeader,
 } from './helpers';
+import { sortProcesses } from '../../../common/utils/sort_processes';
 
 interface UseProcessTreeDeps {
   sessionEntityId: string;
@@ -42,15 +43,40 @@ export class ProcessImpl implements Process {
   expanded: boolean;
   alertsExpanded: boolean;
   searchMatched: string | null;
+  orphans: Process[];
 
   constructor(id: string) {
     this.id = id;
     this.events = [];
     this.children = [];
+    this.orphans = [];
     this.autoExpand = false;
     this.expanded = false;
     this.alertsExpanded = false;
     this.searchMatched = null;
+  }
+
+  // hideSameGroup will filter out any processes which have the same pgid as this process
+  getChildren(hideSameGroup: boolean = false) {
+    let children = this.children;
+
+    // if there are orphans, we just render them inline with the other child processes (currently only session leader does this)
+    if (this.orphans.length) {
+      children = [...children, ...this.orphans].sort(sortProcesses);
+    }
+
+    if (hideSameGroup) {
+      const { pid } = this.getDetails().process;
+
+      return children.filter((process) => {
+        const { pgid } = process.getDetails().process;
+
+        // TODO: needs update after field rename to match ECS
+        return pgid !== pid || process.searchMatched;
+      });
+    }
+
+    return children;
   }
 
   hasOutput() {
@@ -196,6 +222,8 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
+  const sessionLeader = processMap[sessionEntityId];
+  sessionLeader.orphans = orphans;
   const flattenedLeader = flattenLeader(processMap, sessionEntityId, orphans);
 
   // return the root session leader process, and a list of orphans
