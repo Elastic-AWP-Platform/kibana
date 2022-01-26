@@ -221,8 +221,7 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
   useEffect(() => {
     setSearchResults(searchProcessTree(processMap, searchQuery));
     autoExpandProcessTree(processMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  }, [searchQuery, processMap]);
 
   const sessionLeader = processMap[sessionEntityId];
   sessionLeader.orphans = orphans;

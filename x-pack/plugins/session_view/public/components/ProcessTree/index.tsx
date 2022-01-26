@@ -35,6 +35,7 @@ interface ProcessTreeDeps {
   selectedProcess?: Process;
   height?: number;
   onProcessSelected?: (process: Process) => void;
+  setSearchResults?: (results: Process[]) => void;
 }
 
 export const ProcessTree = ({
@@ -49,6 +50,7 @@ export const ProcessTree = ({
   searchQuery,
   selectedProcess,
   onProcessSelected,
+  setSearchResults,
   height = 500,
 }: ProcessTreeDeps) => {
   const styles = useStyles();
@@ -57,11 +59,17 @@ export const ProcessTree = ({
 
   const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(true);
 
-  const { sessionLeader, processMap, getFlattenedLeader } = useProcessTree({
+  const { sessionLeader, processMap, getFlattenedLeader, searchResults } = useProcessTree({
     sessionEntityId,
     data,
     searchQuery,
   });
+
+  useEffect(() => {
+    if (setSearchResults) {
+      setSearchResults(searchResults);
+    }
+  }, [searchResults, setSearchResults]);
 
   const flattenedLeader = getFlattenedLeader(showGroupLeadersOnly);
 

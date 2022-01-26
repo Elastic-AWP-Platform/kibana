@@ -36,8 +36,8 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
     };
 
     const searchHighlight = `
-      background-color: ${colors.highlight};
-      color: ${colors.text};
+      background-color: yellow;
+      color: black;
       border-radius: ${border.radius.medium};
     `;
 
