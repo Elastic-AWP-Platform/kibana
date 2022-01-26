@@ -7,6 +7,7 @@
 
 import React from 'react';
 import userEvent from '@testing-library/user-event';
+import { waitFor } from '@testing-library/react';
 import {
   processMock,
   childProcessMock,
@@ -113,8 +114,7 @@ describe('ProcessTreeNode component', () => {
       renderResult = mockedContext.render(
         <ProcessTreeNode process={processMock} onProcessSelected={onProcessSelected} />
       );
-
-      userEvent.click(renderResult.getByTestId('processTreeNodeRow'));
+      userEvent.click(renderResult.getByTestId(`processTreeNodeRow-${processMock.id}`));
       expect(onProcessSelected).toHaveBeenCalled();
     });
 
@@ -130,7 +130,7 @@ describe('ProcessTreeNode component', () => {
       // @ts-ignore
       windowGetSelectionSpy.mockImplementation(() => ({ type: 'Range' }));
 
-      userEvent.click(renderResult.getByTestId('processTreeNodeRow'));
+      userEvent.click(renderResult.getByTestId(`processTreeNodeRow-${processMock.id}`));
       expect(onProcessSelected).not.toHaveBeenCalled();
 
       // cleanup
@@ -145,13 +145,22 @@ describe('ProcessTreeNode component', () => {
         expect(renderResult.queryByTestId('processTreeNodeAlertButton')).toBeTruthy();
       });
       it('toggle Alert Details button when Alert button is clicked', async () => {
+        const process = { ...sessionViewAlertProcessMock };
+        const onToggleAlerts = () => (process.alertsExpanded = !process.alertsExpanded);
+
         renderResult = mockedContext.render(
-          <ProcessTreeNode process={sessionViewAlertProcessMock} />
+          <ProcessTreeNode process={process} onToggleAlerts={onToggleAlerts} />
         );
         userEvent.click(renderResult.getByTestId('processTreeNodeAlertButton'));
-        expect(renderResult.queryByTestId('sessionViewAlertDetails')).toBeTruthy();
+        renderResult.rerender(
+          <ProcessTreeNode process={process} onToggleAlerts={onToggleAlerts} />
+        );
+        expect(renderResult.getByTestId('sessionViewAlertDetails')).toBeInTheDocument();
         userEvent.click(renderResult.getByTestId('processTreeNodeAlertButton'));
-        expect(renderResult.queryByTestId('sessionViewAlertDetails')).toBeFalsy();
+        renderResult.rerender(
+          <ProcessTreeNode process={process} onToggleAlerts={onToggleAlerts} />
+        );
+        expect(renderResult.queryByTestId('sessionViewAlertDetails')).not.toBeInTheDocument();
       });
     });
     describe('Child processes', () => {
@@ -171,14 +180,26 @@ describe('ProcessTreeNode component', () => {
           getChildren: () => [childProcessMock],
         };
 
-        renderResult = mockedContext.render(<ProcessTreeNode process={processMockWithChildren} />);
+        const onToggleChild = () =>
+          (processMockWithChildren.expanded = !processMockWithChildren.expanded);
+
+        renderResult = mockedContext.render(
+          <ProcessTreeNode process={processMockWithChildren} onToggleChild={onToggleChild} />
+        );
 
         expect(renderResult.getAllByTestId('processTreeNode')).toHaveLength(1);
 
         userEvent.click(renderResult.getByTestId('processTreeNodeChildProcessesButton'));
+
+        renderResult.rerender(
+          <ProcessTreeNode process={processMockWithChildren} onToggleChild={onToggleChild} />
+        );
         expect(renderResult.getAllByTestId('processTreeNode')).toHaveLength(2);
 
         userEvent.click(renderResult.getByTestId('processTreeNodeChildProcessesButton'));
+        renderResult.rerender(
+          <ProcessTreeNode process={processMockWithChildren} onToggleChild={onToggleChild} />
+        );
         expect(renderResult.getAllByTestId('processTreeNode')).toHaveLength(1);
       });
     });
