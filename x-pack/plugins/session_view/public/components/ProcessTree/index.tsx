@@ -4,7 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import { EuiButton } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
@@ -55,14 +55,15 @@ export const ProcessTree = ({
 
   const windowingListRef = useRef<List>(null);
 
-  const { sessionLeader, processMap, flattenedLeader, searchResults } = useProcessTree({
+  const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(true);
+
+  const { sessionLeader, processMap, getFlattenedLeader } = useProcessTree({
     sessionEntityId,
     data,
     searchQuery,
   });
 
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const selectionAreaRef = useRef<HTMLDivElement>(null);
+  const flattenedLeader = getFlattenedLeader(showGroupLeadersOnly);
 
   useEffect(() => {
     // after 2 pages are loaded (due to bi-directional jump to), auto select the process
@@ -77,7 +78,7 @@ export const ProcessTree = ({
         );
       }
     }
-  }, [jumpToEvent, processMap, onProcessSelected, data]);
+  }, [jumpToEvent, processMap, onProcessSelected, data, flattenedLeader]);
 
   // auto selects the session leader process if no selection is made yet
   useEffect(() => {
@@ -98,6 +99,10 @@ export const ProcessTree = ({
     windowingListRef.current?.forceUpdate();
   };
 
+  const toggleGroupLeadersOnly = () => {
+    setShowGroupLeadersOnly(!showGroupLeadersOnly);
+  };
+
   function renderLoadMoreButton(text: JSX.Element, func: FetchFunction) {
     return (
       <EuiButton fullWidth onClick={() => func()} isLoading={isFetching}>
@@ -108,7 +113,7 @@ export const ProcessTree = ({
 
   const renderWindowedProcessTree = (reduceHeightPrev: number, reduceHeightNext: number) => {
     return (
-      <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
+      <div data-test-subj="sessionViewProcessTree">
         <AutoSizer>
           {({ width }) => (
             <List
@@ -135,6 +140,8 @@ export const ProcessTree = ({
                         onProcessSelected={onProcessSelected}
                         onToggleChild={toggleProcessChildComponent}
                         onToggleAlerts={toggleProcessAlerts}
+                        onToggleGroupLeadersOnly={toggleGroupLeadersOnly}
+                        showGroupLeadersOnly={showGroupLeadersOnly}
                         selectedProcess={selectedProcess}
                       />
                     ) : (
@@ -144,7 +151,6 @@ export const ProcessTree = ({
                         depth={1}
                         onToggleChild={toggleProcessChildComponent}
                         onToggleAlerts={toggleProcessAlerts}
-                        isOrphan={flattenedLeader[index].isOrphan}
                         selectedProcess={selectedProcess}
                       />
                     )}
@@ -155,13 +161,12 @@ export const ProcessTree = ({
             />
           )}
         </AutoSizer>
-        <div ref={selectionAreaRef} css={styles.selectionArea} />
       </div>
     );
   };
 
   return (
-    <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
+    <div css={styles.scroller}>
       {hasPreviousPage &&
         renderLoadMoreButton(
           <FormattedMessage id="xpack.sessionView.loadPrevious" defaultMessage="Load previous" />,
@@ -169,11 +174,6 @@ export const ProcessTree = ({
         )}
       {flattenedLeader.length > 0 &&
         renderWindowedProcessTree(hasPreviousPage ? 40 : 0, hasNextPage ? 40 : 0)}
-      <div
-        data-test-subj="processTreeSelectionArea"
-        ref={selectionAreaRef}
-        css={styles.selectionArea}
-      />
       {hasNextPage &&
         renderLoadMoreButton(
           <FormattedMessage id="xpack.sessionView.loadNext" defaultMessage="Load next" />,

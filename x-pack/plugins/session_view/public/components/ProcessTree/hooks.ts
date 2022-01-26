@@ -44,6 +44,7 @@ export class ProcessImpl implements Process {
   alertsExpanded: boolean;
   searchMatched: string | null;
   orphans: Process[];
+  showGroupLeadersOnly: boolean;
 
   constructor(id: string) {
     this.id = id;
@@ -54,6 +55,7 @@ export class ProcessImpl implements Process {
     this.expanded = false;
     this.alertsExpanded = false;
     this.searchMatched = null;
+    this.showGroupLeadersOnly = false;
   }
 
   // hideSameGroup will filter out any processes which have the same pgid as this process
@@ -224,7 +226,8 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
 
   const sessionLeader = processMap[sessionEntityId];
   sessionLeader.orphans = orphans;
-  const flattenedLeader = flattenLeader(processMap, sessionEntityId, orphans);
+  const getFlattenedLeader = (hideSameGroup = true) =>
+    flattenLeader(processMap, sessionEntityId, orphans, hideSameGroup);
 
   // return the root session leader process, and a list of orphans
   return {
@@ -232,6 +235,6 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
     processMap,
     orphans,
     searchResults,
-    flattenedLeader,
+    getFlattenedLeader,
   };
 };

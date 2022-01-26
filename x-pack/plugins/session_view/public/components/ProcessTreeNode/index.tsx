@@ -11,7 +11,7 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useMemo, useRef, useLayoutEffect, useState, useEffect, MouseEvent } from 'react';
+import React, { useRef, useLayoutEffect, MouseEvent } from 'react';
 import { EuiButton, EuiIcon, EuiToolTip } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
@@ -23,9 +23,11 @@ interface ProcessDeps {
   isSessionLeader?: boolean;
   depth?: number;
   selectedProcess?: Process;
+  showGroupLeadersOnly?: boolean;
   onProcessSelected?: (process: Process) => void;
   onToggleChild?: (process: Process) => void;
   onToggleAlerts?: (process: Process) => void;
+  onToggleGroupLeadersOnly?: (process: Process) => void;
 }
 
 /**
@@ -36,13 +38,14 @@ export function ProcessTreeNode({
   process,
   isSessionLeader = false,
   depth = 0,
+  showGroupLeadersOnly = false,
   onProcessSelected,
   onToggleChild,
   onToggleAlerts,
+  onToggleGroupLeadersOnly,
   selectedProcess,
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
-  const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(isSessionLeader);
   const { searchMatched } = process;
   const processDetails = process.getDetails();
 
@@ -50,11 +53,10 @@ export function ProcessTreeNode({
 
   const alerts = process.getAlerts();
 
-  const styles = useStyles({
-    depth,
-    hasAlerts: !!alerts.length,
-    isSelected: selectedProcess?.id === process.id,
-  });
+  const hasAlerts = !!alerts.length;
+  const isSelected = selectedProcess?.id === process.id;
+
+  const styles = useStyles({ depth, hasAlerts, isSelected, isSessionLeader });
 
   const onChildButtonClick = () => {
     if (onToggleChild) {
@@ -65,6 +67,11 @@ export function ProcessTreeNode({
   const onAlertButtonClick = () => {
     if (onToggleAlerts) {
       onToggleAlerts(process);
+    }
+  };
+  const onToggleGroupLeadersOnlyClick = () => {
+    if (onToggleGroupLeadersOnly) {
+      onToggleGroupLeadersOnly(process);
     }
   };
 
@@ -110,7 +117,6 @@ export function ProcessTreeNode({
               onProcessSelected={onProcessSelected}
               onToggleChild={onToggleChild}
               onToggleAlerts={onToggleAlerts}
-              isOrphan={child.isOrphan}
               selectedProcess={selectedProcess}
             />
           );
@@ -124,10 +130,10 @@ export function ProcessTreeNode({
   };
 
   const renderButtons = () => {
-    const { children, expanded, alertsExpanded } = process;
+    const { expanded, alertsExpanded } = process;
 
     const buttons = [];
-    const childCount = process.getChildren().length;
+    const childCount = process.getChildren(false).length;
 
     if (isSessionLeader) {
       const groupLeaderCount = process.getChildren(true).length;
@@ -150,7 +156,7 @@ export function ProcessTreeNode({
             <EuiButton
               key="child-processes-button"
               css={styles.getButtonStyle(ButtonType.children)}
-              onClick={() => setShowGroupLeadersOnly(!showGroupLeadersOnly)}
+              onClick={onToggleGroupLeadersOnlyClick}
               data-test-subj="processTreeNodeChildProcessesButton"
             >
               <FormattedMessage
@@ -163,7 +169,7 @@ export function ProcessTreeNode({
               <EuiIcon
                 css={styles.buttonArrow}
                 size="s"
-                type={getExpandedIcon(showGroupLeadersOnly)}
+                type={getExpandedIcon(!showGroupLeadersOnly)}
               />
             </EuiButton>
           </EuiToolTip>
