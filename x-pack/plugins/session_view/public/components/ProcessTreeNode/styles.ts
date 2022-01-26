@@ -133,16 +133,14 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
         height: '100%',
         pointerEvents: 'none',
         content: `''`,
-        marginLeft: `-${depth * TREE_INDENT - 4}px`,
+        marginLeft: `-${isSessionLeader ? 26 : depth * TREE_INDENT - 4}px`,
         borderLeft: `4px solid ${borderColor}`,
         backgroundColor: bgColor,
-        width: `calc(100% + ${depth * TREE_INDENT - 4}px)`,
+        width: `calc(100% + ${isSessionLeader ? 26 : depth * TREE_INDENT - 4}px)`,
       },
     };
 
-    if (!isSessionLeader) {
-      processNode = { ...processNode, ...children };
-    }
+    processNode = { ...processNode, ...children };
 
     const wrapper: CSSObject = {
       paddingLeft: size.s,
