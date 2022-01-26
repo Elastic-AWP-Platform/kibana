@@ -13,7 +13,7 @@ import { SessionView } from './index';
 import userEvent from '@testing-library/user-event';
 
 describe('SessionView component', () => {
-  let render: () => ReturnType<AppContextTestRender['render']>;
+  let render: (props?: any) => ReturnType<AppContextTestRender['render']>;
   let renderResult: ReturnType<typeof render>;
   let mockedContext: AppContextTestRender;
   let mockedApi: AppContextTestRender['coreStart']['http']['get'];
@@ -23,8 +23,10 @@ describe('SessionView component', () => {
   beforeEach(() => {
     mockedContext = createAppRootMockRenderer();
     mockedApi = mockedContext.coreStart.http.get;
-    render = () =>
-      (renderResult = mockedContext.render(<SessionView sessionEntityId="test-entity-id" />));
+    render = (props = {}) =>
+      (renderResult = mockedContext.render(
+        <SessionView sessionEntityId="ae06c110-ad2d-5830-b47c-08ad62f1734c" {...props} />
+      ));
   });
 
   describe('When SessionView is mounted', () => {
@@ -81,11 +83,7 @@ describe('SessionView component', () => {
         render();
         await waitForApiCall();
 
-        expect(renderResult.getAllByTestId('processTreeNode')).toBeTruthy();
-
-        const selectionArea = renderResult.queryByTestId('processTreeSelectionArea');
-
-        expect(selectionArea?.parentElement?.getAttribute('data-id')).toEqual('test-entity-id');
+        expect(renderResult.getAllByTestId('processTreeNode')[0]).toMatchSnapshot();
       });
 
       it('should toggle detail panel visibilty when detail button clicked', async () => {
@@ -94,6 +92,21 @@ describe('SessionView component', () => {
 
         userEvent.click(renderResult.getByTestId('sessionViewDetailPanelToggle'));
         expect(renderResult.getByTestId('sessionViewDetailPanel')).toBeTruthy();
+      });
+
+      it('should jump To Event', async () => {
+        const jumpToEvent = {
+          '@timestamp': new Date('2021-11-23T13:41:46.768Z'),
+          process: {
+            entity_id: '85752b94-1c86-5540-9a61-743429d5a206',
+          },
+        };
+
+        const sessionView = render({ jumpToEvent });
+        await waitForApiCall();
+        expect(
+          sessionView.getByTestId(`processTreeNodeRow-${jumpToEvent.process.entity_id}`)
+        ).toBeInTheDocument();
       });
     });
   });

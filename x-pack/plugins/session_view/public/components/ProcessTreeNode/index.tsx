@@ -11,7 +11,7 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useMemo, useRef, useLayoutEffect, useState, useEffect, MouseEvent } from 'react';
+import React, { useRef, useLayoutEffect, MouseEvent } from 'react';
 import { EuiButton, EuiIcon, EuiToolTip } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
@@ -22,7 +22,12 @@ interface ProcessDeps {
   process: Process;
   isSessionLeader?: boolean;
   depth?: number;
+  selectedProcess?: Process;
+  showGroupLeadersOnly?: boolean;
   onProcessSelected?: (process: Process) => void;
+  onToggleChild?: (process: Process) => void;
+  onToggleAlerts?: (process: Process) => void;
+  onToggleGroupLeadersOnly?: (process: Process) => void;
 }
 
 /**
@@ -33,35 +38,42 @@ export function ProcessTreeNode({
   process,
   isSessionLeader = false,
   depth = 0,
+  showGroupLeadersOnly = false,
   onProcessSelected,
+  onToggleChild,
+  onToggleAlerts,
+  onToggleGroupLeadersOnly,
+  selectedProcess,
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
-
-  const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
-  const [alertsExpanded, setAlertsExpanded] = useState(false);
-  const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(isSessionLeader);
   const { searchMatched } = process;
+  const processDetails = process.getDetails();
 
-  useEffect(() => {
-    setChildrenExpanded(isSessionLeader || process.autoExpand);
-  }, [isSessionLeader, process.autoExpand]);
+  const hasExec = process.hasExec();
 
-  const processDetails = useMemo(() => {
-    return process.getDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  const alerts = process.getAlerts();
 
-  const hasExec = useMemo(() => {
-    return process.hasExec();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  const hasAlerts = !!alerts.length;
+  const isSelected = selectedProcess?.id === process.id;
 
-  const alerts = useMemo(() => {
-    return process.getAlerts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  const styles = useStyles({ depth, hasAlerts, isSelected, isSessionLeader });
 
-  const styles = useStyles({ depth, hasAlerts: !!alerts.length });
+  const onChildButtonClick = () => {
+    if (onToggleChild) {
+      onToggleChild(process);
+    }
+  };
+
+  const onAlertButtonClick = () => {
+    if (onToggleAlerts) {
+      onToggleAlerts(process);
+    }
+  };
+  const onToggleGroupLeadersOnlyClick = () => {
+    if (onToggleGroupLeadersOnly) {
+      onToggleGroupLeadersOnly(process);
+    }
+  };
 
   useLayoutEffect(() => {
     if (searchMatched !== null && textRef.current) {
@@ -79,7 +91,7 @@ export function ProcessTreeNode({
     }
   }, [searchMatched, styles.searchHighlight]);
 
-  if (!processDetails) {
+  if (!processDetails?.process) {
     return null;
   }
 
@@ -88,7 +100,7 @@ export function ProcessTreeNode({
   const renderChildren = () => {
     const children = process.getChildren(showGroupLeadersOnly);
 
-    if (!childrenExpanded || !children || children.length === 0) {
+    if (isSessionLeader || !expanded || !children || children.length === 0) {
       return;
     }
 
@@ -103,6 +115,9 @@ export function ProcessTreeNode({
               process={child}
               depth={newDepth}
               onProcessSelected={onProcessSelected}
+              onToggleChild={onToggleChild}
+              onToggleAlerts={onToggleAlerts}
+              selectedProcess={selectedProcess}
             />
           );
         })}
@@ -115,8 +130,10 @@ export function ProcessTreeNode({
   };
 
   const renderButtons = () => {
+    const { expanded, alertsExpanded } = process;
+
     const buttons = [];
-    const childCount = process.getChildren().length;
+    const childCount = process.getChildren(false).length;
 
     if (isSessionLeader) {
       const groupLeaderCount = process.getChildren(true).length;
@@ -139,7 +156,7 @@ export function ProcessTreeNode({
             <EuiButton
               key="child-processes-button"
               css={styles.getButtonStyle(ButtonType.children)}
-              onClick={() => setShowGroupLeadersOnly(!showGroupLeadersOnly)}
+              onClick={onToggleGroupLeadersOnlyClick}
               data-test-subj="processTreeNodeChildProcessesButton"
             >
               <FormattedMessage
@@ -152,7 +169,7 @@ export function ProcessTreeNode({
               <EuiIcon
                 css={styles.buttonArrow}
                 size="s"
-                type={getExpandedIcon(showGroupLeadersOnly)}
+                type={getExpandedIcon(!showGroupLeadersOnly)}
               />
             </EuiButton>
           </EuiToolTip>
@@ -163,14 +180,14 @@ export function ProcessTreeNode({
         <EuiButton
           key="child-processes-button"
           css={styles.getButtonStyle(ButtonType.children)}
-          onClick={() => setChildrenExpanded(!childrenExpanded)}
+          onClick={onChildButtonClick}
           data-test-subj="processTreeNodeChildProcessesButton"
         >
           <FormattedMessage
             id="xpack.sessionView.childProcesses"
             defaultMessage="Child processes"
           />
-          <EuiIcon css={styles.buttonArrow} size="s" type={getExpandedIcon(childrenExpanded)} />
+          <EuiIcon css={styles.buttonArrow} size="s" type={getExpandedIcon(expanded)} />
         </EuiButton>
       );
     }
@@ -180,7 +197,7 @@ export function ProcessTreeNode({
         <EuiButton
           key="alert-button"
           css={styles.getButtonStyle(ButtonType.alerts)}
-          onClick={() => setAlertsExpanded(!alertsExpanded)}
+          onClick={onAlertButtonClick}
           data-test-subj="processTreeNodeAlertButton"
         >
           <FormattedMessage id="xpack.sessionView.alerts" defaultMessage="Alerts" />
@@ -287,7 +304,7 @@ export function ProcessTreeNode({
     onProcessSelected?.(process);
   };
 
-  const id = process.id;
+  const { id, alertsExpanded, expanded } = process;
 
   return (
     <>
@@ -298,14 +315,18 @@ export function ProcessTreeNode({
         data-test-subj="processTreeNode"
       >
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-        <div data-test-subj="processTreeNodeRow" css={styles.wrapper} onClick={onProcessClicked}>
+        <div
+          data-test-subj={`processTreeNodeRow-${id}`}
+          css={styles.wrapper}
+          onClick={onProcessClicked}
+        >
           {isSessionLeader ? renderSessionLeader() : renderProcess()}
           {renderRootEscalation()}
           {renderButtons()}
         </div>
       </div>
       {alertsExpanded && <ProcessTreeAlerts alerts={alerts} />}
-      {renderChildren()}
+      {expanded && renderChildren()}
     </>
   );
 }

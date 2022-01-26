@@ -125,7 +125,12 @@ export interface Process {
   orphans: Process[]; // currently, orphans are rendered inline with the entry session leaders children
   parent: Process | undefined;
   autoExpand: boolean;
+  expanded: boolean;
+  alertsExpanded: boolean;
+  showGroupLeadersOnly: boolean;
   searchMatched: string | null; // either false, or set to searchQuery
+  depth?: number;
+  isOrphan?: boolean;
   hasOutput(): boolean;
   hasAlerts(): boolean;
   getAlerts(): ProcessEvent[];
@@ -134,6 +139,7 @@ export interface Process {
   getDetails(): ProcessEvent;
   isUserEntered(): boolean;
   getMaxAlertLevel(): number | null;
+  getHeight(isSessionLeader: boolean): number;
   getChildren(hideSameGroup?: boolean): Process[];
 }
 

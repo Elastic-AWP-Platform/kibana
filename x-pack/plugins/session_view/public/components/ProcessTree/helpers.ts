@@ -13,7 +13,7 @@ export const updateProcessMap = (processMap: ProcessMap, events: ProcessEvent[])
     let process = processMap[id];
 
     if (!process) {
-      process = new ProcessImpl(id);
+      process = new ProcessImpl(id) as unknown as Process;
       processMap[id] = process;
     }
 
@@ -56,25 +56,13 @@ export const buildProcessTree = (
       if (backwardDirection) {
         orphans?.unshift(process);
       } else {
+        process.isOrphan = true;
         orphans?.push(process);
       }
     }
   });
 
   const newOrphans: Process[] = [];
-
-  // with this new page of events processed, lets try re-parent any orphans
-  orphans?.forEach((process) => {
-    const parentProcess = processMap[process.getDetails().process.parent.entity_id];
-
-    if (parentProcess) {
-      process.parent = parentProcess; // handy for recursive operations (like auto expand)
-
-      parentProcess.children.push(process);
-    } else {
-      newOrphans.push(process);
-    }
-  });
 
   return newOrphans;
 };
@@ -148,4 +136,34 @@ export const processNewEvents = (
   );
 
   return [autoExpandProcessTree(updatedProcessMap), newOrphans];
+};
+
+export const flattenLeader = (
+  processMap: ProcessMap,
+  sessionEntityId: string,
+  orphans: Process[],
+  hideSameGroup = true
+): Process[] => {
+  let processArray: Process[] = [];
+  const process = processMap[sessionEntityId];
+  processArray.push(process);
+  const { pid } = process.getDetails().process;
+
+  if (process.children.length) {
+    processArray = processArray.concat(
+      hideSameGroup
+        ? process.children.filter((p) => {
+            const { pgid } = p.getDetails().process;
+            // TODO: needs update after field rename to match ECS
+            return pgid !== pid || p.searchMatched;
+          })
+        : process.children
+    );
+  }
+
+  if (orphans.length) {
+    processArray = processArray.concat(orphans);
+  }
+
+  return processArray;
 };

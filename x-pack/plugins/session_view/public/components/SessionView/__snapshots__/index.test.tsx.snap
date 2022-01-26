@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SessionView component When SessionView is mounted And data exists should show items on the list, and auto selects session leader 1`] = `
+.emotion-0 {
+  line-height: 18px;
+  height: 20px;
+  font-size: 11px;
+  font-family: 'Roboto Mono',Menlo,Courier,monospace;
+  border-radius: 6px;
+  color: #343741;
+  margin-left: 8px;
+  min-width: 0;
+  background: rgba(170, 101, 86, 0.04);
+  border: 1px solid rgba(170, 101, 86, 0.48);
+}
+
+.emotion-1 {
+  margin-left: 8px;
+}
+
+<div
+  css="[object Object]"
+  data-id="ae06c110-ad2d-5830-b47c-08ad62f1734c"
+  data-test-subj="processTreeNode"
+>
+  <div
+    css="[object Object]"
+    data-test-subj="processTreeNodeRow-ae06c110-ad2d-5830-b47c-08ad62f1734c"
+  >
+    <span
+      data-euiicon-type="consoleApp"
+    />
+     
+    <b
+      css="[object Object]"
+    >
+      cat
+    </b>
+     
+    started by
+     
+    <span
+      data-euiicon-type="user"
+    />
+     
+    <b
+      css="[object Object]"
+    >
+      vagrant
+    </b>
+    <span
+      class="euiToolTipAnchor"
+    >
+      <button
+        class="euiButton euiButton--primary emotion-0"
+        data-test-subj="processTreeNodeChildProcessesButton"
+        type="button"
+      >
+        <span
+          class="euiButtonContent euiButton__content"
+        >
+          <span
+            class="euiButton__text"
+          >
+            +2 more
+            <span
+              class="emotion-1"
+              data-euiicon-type="arrowDown"
+            />
+          </span>
+        </span>
+      </button>
+    </span>
+  </div>
+</div>
+`;

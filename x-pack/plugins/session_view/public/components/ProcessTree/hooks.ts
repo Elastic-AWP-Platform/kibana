@@ -15,7 +15,17 @@ import {
   ProcessMap,
   ProcessEventsPage,
 } from '../../../common/types/process_tree';
-import { processNewEvents, searchProcessTree, autoExpandProcessTree } from './helpers';
+import {
+  PROCESS_NODE_BASE_HEIGHT,
+  PROCESS_NODE_ALERT_DETAIL_HEIGHT,
+  PROCESS_NODE_ALERT_DETAIL_PADDING,
+} from '../../../common/constants';
+import {
+  processNewEvents,
+  searchProcessTree,
+  autoExpandProcessTree,
+  flattenLeader,
+} from './helpers';
 import { sortProcesses } from '../../../common/utils/sort_processes';
 
 interface UseProcessTreeDeps {
@@ -30,8 +40,11 @@ export class ProcessImpl implements Process {
   children: Process[];
   parent: Process | undefined;
   autoExpand: boolean;
+  expanded: boolean;
+  alertsExpanded: boolean;
   searchMatched: string | null;
   orphans: Process[];
+  showGroupLeadersOnly: boolean;
 
   constructor(id: string) {
     this.id = id;
@@ -39,7 +52,10 @@ export class ProcessImpl implements Process {
     this.children = [];
     this.orphans = [];
     this.autoExpand = false;
+    this.expanded = false;
+    this.alertsExpanded = false;
     this.searchMatched = null;
+    this.showGroupLeadersOnly = false;
   }
 
   // hideSameGroup will filter out any processes which have the same pgid as this process
@@ -130,6 +146,22 @@ export class ProcessImpl implements Process {
     // TODO:
     return null;
   }
+
+  getHeight(isSessionLeader: boolean = false) {
+    const alertsDetailHeight = this.alertsExpanded
+      ? this.getAlerts().length * PROCESS_NODE_ALERT_DETAIL_HEIGHT +
+        PROCESS_NODE_ALERT_DETAIL_PADDING
+      : 0;
+    const selfHeight = PROCESS_NODE_BASE_HEIGHT + alertsDetailHeight;
+
+    if (this.expanded && !isSessionLeader) {
+      return this.children.reduce((cumulativeHeight, child) => {
+        return cumulativeHeight + child.getHeight(false);
+      }, selfHeight);
+    }
+
+    return selfHeight;
+  }
 }
 
 export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProcessTreeDeps) => {
@@ -192,10 +224,17 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  // set new orphans array on the session leader
   const sessionLeader = processMap[sessionEntityId];
-
   sessionLeader.orphans = orphans;
+  const getFlattenedLeader = (hideSameGroup = true) =>
+    flattenLeader(processMap, sessionEntityId, orphans, hideSameGroup);
 
-  return { sessionLeader: processMap[sessionEntityId], processMap, searchResults };
+  // return the root session leader process, and a list of orphans
+  return {
+    sessionLeader: processMap[sessionEntityId],
+    processMap,
+    orphans,
+    searchResults,
+    getFlattenedLeader,
+  };
 };

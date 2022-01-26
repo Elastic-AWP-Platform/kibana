@@ -4,13 +4,13 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { AutoSizer, List } from 'react-virtualized';
 import { EuiButton } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { ProcessTreeNode } from '../ProcessTreeNode';
 import { useProcessTree } from './hooks';
 import { Process, ProcessEventsPage, ProcessEvent } from '../../../common/types/process_tree';
-import { useScroll } from '../../hooks/use_scroll';
 import { useStyles } from './styles';
 
 type FetchFunction = () => void;
@@ -32,7 +32,8 @@ interface ProcessTreeDeps {
   searchQuery?: string;
 
   // currently selected process
-  selectedProcess?: Process | null;
+  selectedProcess?: Process;
+  height?: number;
   onProcessSelected?: (process: Process) => void;
 }
 
@@ -48,77 +49,21 @@ export const ProcessTree = ({
   searchQuery,
   selectedProcess,
   onProcessSelected,
+  height = 500,
 }: ProcessTreeDeps) => {
   const styles = useStyles();
 
-  const { sessionLeader, processMap } = useProcessTree({
+  const windowingListRef = useRef<List>(null);
+
+  const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(true);
+
+  const { sessionLeader, processMap, getFlattenedLeader } = useProcessTree({
     sessionEntityId,
     data,
     searchQuery,
   });
 
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const selectionAreaRef = useRef<HTMLDivElement>(null);
-
-  useScroll({
-    div: scrollerRef.current,
-    handler: (pos: number, endReached: boolean) => {
-      if (!isFetching && endReached) {
-        fetchNextPage();
-      }
-    },
-  });
-
-  /**
-   * highlights a process in the tree
-   * we do it this way to avoid state changes on potentially thousands of <Process> components
-   */
-  const selectProcess = useCallback((process: Process) => {
-    if (!selectionAreaRef || !scrollerRef) {
-      return;
-    }
-
-    if (!selectionAreaRef.current || !scrollerRef.current) {
-      return;
-    }
-
-    const selectionAreaEl = selectionAreaRef.current;
-    selectionAreaEl.style.display = 'block';
-
-    // TODO: concept of alert level unknown wrt to elastic security
-    const alertLevel = process.getMaxAlertLevel();
-
-    if (alertLevel && alertLevel >= 0) {
-      selectionAreaEl.style.backgroundColor =
-        alertLevel > 0 ? 'rgba(229, 115, 115, 0.24)' : '#F2C94C4A';
-    } else {
-      selectionAreaEl.style.backgroundColor = '';
-    }
-
-    // find the DOM element for the command which is selected by id
-    const processEl = scrollerRef.current.querySelector<HTMLElement>(`[data-id="${process.id}"]`);
-
-    if (processEl) {
-      processEl.prepend(selectionAreaEl);
-
-      const cTop = scrollerRef.current.scrollTop;
-      const cBottom = cTop + scrollerRef.current.clientHeight;
-
-      const eTop = processEl.offsetTop;
-      const eBottom = eTop + processEl.clientHeight;
-      const isVisible = eTop >= cTop && eBottom <= cBottom;
-
-      if (!isVisible) {
-        processEl.scrollIntoView({ block: 'center' });
-      }
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    if (selectedProcess) {
-      selectProcess(selectedProcess);
-    }
-  }, [selectedProcess, selectProcess]);
+  const flattenedLeader = getFlattenedLeader(showGroupLeadersOnly);
 
   useEffect(() => {
     // after 2 pages are loaded (due to bi-directional jump to), auto select the process
@@ -126,11 +71,14 @@ export const ProcessTree = ({
     if (jumpToEvent && data.length === 2) {
       const process = processMap[jumpToEvent.process.entity_id];
 
-      if (process && onProcessSelected) {
-        onProcessSelected(process);
+      if (process) {
+        onProcessSelected?.(process);
+        windowingListRef.current?.scrollToRow(
+          flattenedLeader.findIndex((p) => p.id === jumpToEvent.process.entity_id)
+        );
       }
     }
-  }, [jumpToEvent, processMap, onProcessSelected, data]);
+  }, [jumpToEvent, processMap, onProcessSelected, data, flattenedLeader]);
 
   // auto selects the session leader process if no selection is made yet
   useEffect(() => {
@@ -138,6 +86,22 @@ export const ProcessTree = ({
       onProcessSelected(sessionLeader);
     }
   }, [sessionLeader, onProcessSelected, selectedProcess]);
+
+  const toggleProcessChildComponent = (process: Process) => {
+    process.expanded = !process.expanded;
+    windowingListRef.current?.recomputeRowHeights();
+    windowingListRef.current?.forceUpdate();
+  };
+
+  const toggleProcessAlerts = (process: Process) => {
+    process.alertsExpanded = !process.alertsExpanded;
+    windowingListRef.current?.recomputeRowHeights();
+    windowingListRef.current?.forceUpdate();
+  };
+
+  const toggleGroupLeadersOnly = () => {
+    setShowGroupLeadersOnly(!showGroupLeadersOnly);
+  };
 
   function renderLoadMoreButton(text: JSX.Element, func: FetchFunction) {
     return (
@@ -147,25 +111,69 @@ export const ProcessTree = ({
     );
   }
 
+  const renderWindowedProcessTree = (reduceHeightPrev: number, reduceHeightNext: number) => {
+    return (
+      <div data-test-subj="sessionViewProcessTree">
+        <AutoSizer>
+          {({ width }) => (
+            <List
+              scrollToAlignment="center"
+              onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
+                const endReached = scrollTop + clientHeight > scrollHeight - 100;
+                if (!isFetching && endReached) {
+                  fetchNextPage();
+                }
+              }}
+              ref={windowingListRef}
+              height={height - reduceHeightPrev - reduceHeightNext}
+              rowCount={flattenedLeader.length}
+              rowHeight={({ index }) =>
+                flattenedLeader[index].getHeight(flattenedLeader[index].id === sessionEntityId)
+              }
+              rowRenderer={({ index, style }) => {
+                return (
+                  <div style={style}>
+                    {index === 0 ? (
+                      <ProcessTreeNode
+                        isSessionLeader
+                        process={sessionLeader}
+                        onProcessSelected={onProcessSelected}
+                        onToggleChild={toggleProcessChildComponent}
+                        onToggleAlerts={toggleProcessAlerts}
+                        onToggleGroupLeadersOnly={toggleGroupLeadersOnly}
+                        showGroupLeadersOnly={showGroupLeadersOnly}
+                        selectedProcess={selectedProcess}
+                      />
+                    ) : (
+                      <ProcessTreeNode
+                        process={flattenedLeader[index]}
+                        onProcessSelected={onProcessSelected}
+                        depth={1}
+                        onToggleChild={toggleProcessChildComponent}
+                        onToggleAlerts={toggleProcessAlerts}
+                        selectedProcess={selectedProcess}
+                      />
+                    )}
+                  </div>
+                );
+              }}
+              width={width || 800}
+            />
+          )}
+        </AutoSizer>
+      </div>
+    );
+  };
+
   return (
-    <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
+    <div css={styles.scroller}>
       {hasPreviousPage &&
         renderLoadMoreButton(
           <FormattedMessage id="xpack.sessionView.loadPrevious" defaultMessage="Load previous" />,
           fetchPreviousPage
         )}
-      {sessionLeader && (
-        <ProcessTreeNode
-          isSessionLeader
-          process={sessionLeader}
-          onProcessSelected={onProcessSelected}
-        />
-      )}
-      <div
-        data-test-subj="processTreeSelectionArea"
-        ref={selectionAreaRef}
-        css={styles.selectionArea}
-      />
+      {flattenedLeader.length > 0 &&
+        renderWindowedProcessTree(hasPreviousPage ? 40 : 0, hasNextPage ? 40 : 0)}
       {hasNextPage &&
         renderLoadMoreButton(
           <FormattedMessage id="xpack.sessionView.loadNext" defaultMessage="Load next" />,
