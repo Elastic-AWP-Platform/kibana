@@ -25,6 +25,28 @@ export const useStyles = () => {
       flexDirection: 'column',
     };
 
+    const processTree: CSSObject = {
+      '&>div[role="rowgroup"]': {
+        '&:before': {
+          borderLeft: `2px dotted ${euiTheme.colors.lightShade}`,
+          position: 'absolute',
+          height: '100%',
+          content: `''`,
+          left: '10px',
+        },
+        '&:after': {
+          content: `''`,
+          left: '7px',
+          bottom: 0,
+          backgroundColor: euiTheme.colors.lightShade,
+          width: '7px',
+          height: '2px',
+          borderRadius: '2px',
+          position: 'absolute',
+        },
+      },
+    };
+
     const selectionArea: CSSObject = {
       position: 'absolute',
       display: 'none',
@@ -38,6 +60,7 @@ export const useStyles = () => {
 
     return {
       scroller,
+      processTree,
       selectionArea,
     };
   }, [euiTheme]);

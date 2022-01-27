@@ -42,11 +42,18 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
     `;
 
     const children: CSSObject = {
+      position: 'relative',
       color: colors.ghost,
       marginLeft: '16px',
       paddingLeft: '8px',
-      borderLeft: `3px dotted ${colors.lightShade}`,
       marginTop: '8px',
+    };
+
+    const processIdentMarker: CSSObject = {
+      position: 'absolute',
+      left: '20px',
+      height: '100%',
+      borderLeft: `2px dotted ${colors.lightShade}`,
       '&:after': {
         position: 'absolute',
         content: `''`,
@@ -54,7 +61,7 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
         left: '-5px',
         backgroundColor: colors.lightShade,
         width: '7px',
-        height: '3px',
+        height: '2px',
         borderRadius: '2px',
       },
     };
@@ -68,6 +75,7 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
       color: colors.text,
       marginLeft: size.s,
       minWidth: 0,
+      flexShrink: 0,
     };
 
     const buttonArrow: CSSObject = {
@@ -143,6 +151,8 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
     processNode = { ...processNode, ...children };
 
     const wrapper: CSSObject = {
+      display: 'flex',
+      alignItems: 'center',
       paddingLeft: size.s,
       position: 'relative',
       verticalAlign: 'middle',
@@ -170,11 +180,19 @@ export const useStyles = ({ depth, hasAlerts, isSessionLeader, isSelected }: Sty
       borderRadius: border.radius.medium,
     };
 
+    const processText: CSSObject = {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    };
+
     return {
       darkText,
       searchHighlight,
       children,
       processNode,
+      processIdentMarker,
+      processText,
       wrapper,
       workingDir,
       userEnteredIcon,

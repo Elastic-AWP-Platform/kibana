@@ -108,6 +108,7 @@ export function ProcessTreeNode({
 
     return (
       <div css={styles.children}>
+        <div css={styles.processIdentMarker} />
         {children.map((child: Process) => {
           return (
             <ProcessTreeNode
@@ -255,7 +256,7 @@ export function ProcessTreeNode({
 
   const renderProcess = () => {
     return (
-      <span>
+      <span css={styles.processText}>
         {process.isUserEntered() && (
           <EuiIcon
             data-test-subj="processTreeNodeUserIcon"

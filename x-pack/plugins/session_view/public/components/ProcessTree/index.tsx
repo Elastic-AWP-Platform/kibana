@@ -117,6 +117,7 @@ export const ProcessTree = ({
         <AutoSizer>
           {({ width }) => (
             <List
+              css={styles.processTree}
               scrollToAlignment="center"
               onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
                 const endReached = scrollTop + clientHeight > scrollHeight - 100;
