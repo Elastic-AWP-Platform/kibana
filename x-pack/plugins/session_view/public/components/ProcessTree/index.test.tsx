@@ -30,6 +30,7 @@ describe('ProcessTree component', () => {
           hasNextPage={false}
           fetchPreviousPage={() => true}
           hasPreviousPage={false}
+          onProcessSelected={jest.fn()}
         />
       );
       expect(renderResult.queryByTestId('sessionViewProcessTree')).toBeTruthy();
@@ -65,6 +66,7 @@ describe('ProcessTree component', () => {
             hasNextPage={false}
             fetchPreviousPage={() => true}
             hasPreviousPage={false}
+            onProcessSelected={jest.fn()}
           />
         );
 
