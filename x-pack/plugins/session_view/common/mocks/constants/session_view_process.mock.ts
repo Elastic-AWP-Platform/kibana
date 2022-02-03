@@ -15,7 +15,7 @@ import {
   ProcessMap,
 } from '../../types/process_tree';
 
-export const mockEvents = [
+export const mockEvents: ProcessEvent[] = [
   {
     '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
     process: {
@@ -108,11 +108,6 @@ export const mockEvents = [
           },
         },
       },
-      name: '',
-      args_count: 0,
-      args: [],
-      working_directory: '/home/vagrant',
-      start: new Date('2021-11-23T15:25:04.210Z'),
       group_leader: {
         pid: 2442,
         user: {
@@ -137,6 +132,11 @@ export const mockEvents = [
           },
         },
       },
+      name: '',
+      args_count: 0,
+      args: [],
+      working_directory: '/home/vagrant',
+      start: new Date('2021-11-23T15:25:04.210Z'),
     },
     event: {
       action: EventAction.fork,
@@ -258,7 +258,6 @@ export const mockEvents = [
       },
       group_leader: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
@@ -297,15 +296,23 @@ export const mockEvents = [
     '@timestamp': new Date('2021-11-23T15:25:05.202Z'),
     process: {
       pid: 3535,
-      pgid: 3535,
       user: {
         name: 'vagrant',
         id: '1000',
       },
       exit_code: 137,
       executable: '/usr/bin/vi',
+      command_line: 'bash',
       interactive: true,
       entity_id: '8e4daeb2-4a4e-56c4-980e-f0dcfdbc3728',
+      tty: {
+        descriptor: 0,
+        type: 'char_device',
+        char_device: {
+          major: 8,
+          minor: 1,
+        },
+      },
       parent: {
         pid: 2442,
         pgid: 2442,
@@ -321,15 +328,23 @@ export const mockEvents = [
         args_count: 0,
         working_directory: '/home/vagrant',
         start: new Date('2021-11-23T15:25:05.202Z'),
+        tty: {
+          descriptor: 0,
+          type: 'char_device',
+          char_device: {
+            major: 8,
+            minor: 1,
+          },
+        },
       },
-      session: {
+      session_leader: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
         },
         executable: '/usr/bin/bash',
+        command_line: 'bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
         name: '',
@@ -337,8 +352,16 @@ export const mockEvents = [
         args_count: 0,
         working_directory: '/home/vagrant',
         start: new Date('2021-11-23T15:25:05.202Z'),
+        tty: {
+          descriptor: 0,
+          type: 'char_device',
+          char_device: {
+            major: 8,
+            minor: 1,
+          },
+        },
       },
-      entry: {
+      entry_leader: {
         pid: 2442,
         pgid: 2442,
         user: {
@@ -346,6 +369,7 @@ export const mockEvents = [
           id: '1000',
         },
         executable: '/usr/bin/bash',
+        command_line: 'bash',
         interactive: true,
         entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
         name: '',
@@ -353,6 +377,38 @@ export const mockEvents = [
         args_count: 0,
         working_directory: '/home/vagrant',
         start: new Date('2021-11-23T15:25:05.202Z'),
+        tty: {
+          descriptor: 0,
+          type: 'char_device',
+          char_device: {
+            major: 8,
+            minor: 1,
+          },
+        },
+      },
+      group_leader: {
+        pid: 2442,
+        user: {
+          name: '',
+          id: '1000',
+        },
+        executable: '/usr/bin/bash',
+        command_line: 'bash',
+        interactive: true,
+        entity_id: '3d0192c6-7c54-5ee6-a110-3539a7cf42bc',
+        name: '',
+        args: [],
+        args_count: 0,
+        working_directory: '/home/vagrant',
+        start: new Date('2021-11-23T15:25:05.202Z'),
+        tty: {
+          descriptor: 0,
+          type: 'char_device',
+          char_device: {
+            major: 8,
+            minor: 1,
+          },
+        },
       },
       start: new Date('2021-11-23T15:25:05.202Z'),
       name: '',
