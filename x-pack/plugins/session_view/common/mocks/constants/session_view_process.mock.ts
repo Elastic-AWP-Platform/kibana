@@ -18,12 +18,12 @@ import {
 export const mockEvents: ProcessEvent[] = [
   {
     '@timestamp': new Date('2021-11-23T15:25:04.210Z'),
+    user: {
+      name: '',
+      id: '1000',
+    },
     process: {
       pid: 3535,
-      user: {
-        name: '',
-        id: '-1',
-      },
       executable: '/usr/bin/bash',
       command_line: 'bash',
       interactive: false,
@@ -162,13 +162,12 @@ export const mockEvents: ProcessEvent[] = [
   },
   {
     '@timestamp': new Date('2021-11-23T15:25:04.218Z'),
+    user: {
+      name: '',
+      id: '1000',
+    },
     process: {
       pid: 3535,
-      pgid: 3535,
-      user: {
-        name: 'vagrant',
-        id: '1000',
-      },
       executable: '/usr/bin/vi',
       command_line: 'bash',
       interactive: true,
@@ -183,7 +182,6 @@ export const mockEvents: ProcessEvent[] = [
       },
       parent: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
@@ -208,7 +206,6 @@ export const mockEvents: ProcessEvent[] = [
       },
       session_leader: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
@@ -233,7 +230,6 @@ export const mockEvents: ProcessEvent[] = [
       },
       entry_leader: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
@@ -294,12 +290,12 @@ export const mockEvents: ProcessEvent[] = [
   },
   {
     '@timestamp': new Date('2021-11-23T15:25:05.202Z'),
+    user: {
+      name: '',
+      id: '1000',
+    },
     process: {
       pid: 3535,
-      user: {
-        name: 'vagrant',
-        id: '1000',
-      },
       exit_code: 137,
       executable: '/usr/bin/vi',
       command_line: 'bash',
@@ -315,7 +311,6 @@ export const mockEvents: ProcessEvent[] = [
       },
       parent: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
@@ -363,7 +358,6 @@ export const mockEvents: ProcessEvent[] = [
       },
       entry_leader: {
         pid: 2442,
-        pgid: 2442,
         user: {
           name: '',
           id: '1000',
@@ -466,12 +460,12 @@ export const mockAlerts: ProcessEvent[] = [
       },
     },
     '@timestamp': new Date('2021-11-23T15:26:34.859Z'),
+    user: {
+      name: 'vagrant',
+      id: '1000',
+    },
     process: {
       pid: 3535,
-      user: {
-        name: 'vagrant',
-        id: '1000',
-      },
       executable: '/usr/bin/vi',
       command_line: 'bash',
       interactive: true,
@@ -633,12 +627,12 @@ export const mockAlerts: ProcessEvent[] = [
       },
     },
     '@timestamp': new Date('2021-11-23T15:26:34.860Z'),
+    user: {
+      name: 'vagrant',
+      id: '1000',
+    },
     process: {
       pid: 3535,
-      user: {
-        name: 'vagrant',
-        id: '1000',
-      },
       exit_code: 137,
       executable: '/usr/bin/vi',
       command_line: 'bash',
@@ -823,6 +817,10 @@ export const childProcessMock: Process = {
           version: '7.9.2009',
         },
       },
+      user: {
+        id: '1',
+        name: 'vagrant',
+      },
       process: {
         args: ['ls', '-l'],
         args_count: 2,
@@ -833,10 +831,6 @@ export const childProcessMock: Process = {
         working_directory: '/home/vagrant',
         start: new Date('2021-11-23T15:25:05.210Z'),
         pid: 2,
-        user: {
-          id: '1',
-          name: 'vagrant',
-        },
         parent: {
           args: ['bash'],
           args_count: 1,
@@ -899,6 +893,10 @@ export const processMock: Process = {
           version: '7.9.2009',
         },
       },
+      user: {
+        id: '1',
+        name: 'vagrant',
+      },
       process: {
         args: ['bash'],
         args_count: 1,
@@ -910,10 +908,6 @@ export const processMock: Process = {
         working_directory: '/home/vagrant',
         start: new Date('2021-11-23T15:25:04.210Z'),
         pid: 1,
-        user: {
-          id: '1',
-          name: 'vagrant',
-        },
         parent: {} as ProcessFields,
         session_leader: {} as ProcessFields,
         entry_leader: {} as ProcessFields,
