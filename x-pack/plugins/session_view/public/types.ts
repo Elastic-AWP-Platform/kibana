@@ -39,4 +39,5 @@ export interface DetailPanelProcessLeader {
   interactive: boolean;
   pid: number;
   entryMetaSourceIp: string;
+  executable: string;
 }
