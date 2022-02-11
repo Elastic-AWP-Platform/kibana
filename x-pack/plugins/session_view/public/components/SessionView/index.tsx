@@ -8,9 +8,14 @@ import React, { useState, ComponentType } from 'react';
 import {
   EuiEmptyPrompt,
   EuiButton,
+  EuiButtonIcon,
   EuiFlexGroup,
   EuiFlexItem,
   EuiResizableContainer,
+  EuiPopover,
+  EuiContextMenu,
+  EuiSelectable,
+  EuiPopoverTitle,
 } from '@elastic/eui';
 import { EuiResizableButtonProps } from '@elastic/eui/src/components/resizable_container/resizable_button';
 import { EuiResizablePanelProps } from '@elastic/eui/src/components/resizable_container/resizable_panel';
@@ -45,6 +50,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Process[] | null>(null);
+
+  const [isFilterToggleOpen, setFilterToggleOpen] = useState(false)
 
   const {
     data,
@@ -140,18 +147,74 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
     return <></>;
   };
 
+  const renderFilterToggleDropDown = () => {
+    return(
+      <>
+        <EuiPopover
+          button={FilterButton}
+          isOpen={isFilterToggleOpen}
+          closePopover={closeFilterButton}
+        >
+          <EuiSelectable 
+            options={options}
+            onChange={newOptions => setOptions(newOptions)}>
+            {(list) => (
+              <div style={{width:240}}>
+              <EuiPopoverTitle>TEST TITLE</EuiPopoverTitle>
+              {list}
+              </div>
+            )}
+          </EuiSelectable>
+        </EuiPopover>
+      </>
+    )
+  }
+
   const toggleDetailPanel = () => {
     setIsDetailOpen(!isDetailOpen);
   };
+
+  const toggleFilterButton =() => {
+    setFilterToggleOpen(!isFilterToggleOpen)
+  }
+
+  const closeFilterButton =() =>{
+    setFilterToggleOpen(false)
+  }
 
   if (!isFetching && !hasData) {
     return renderNoData();
   }
 
+  const FilterButton = (
+    <EuiFlexItem grow={false}>
+     <EuiButtonIcon
+       iconType="filter"
+       display="base"
+       onClick={toggleFilterButton}
+       size="m"
+     />
+    </EuiFlexItem>
+  ) 
+
+  const optionsList = [
+        {
+          label: 'Filter A',
+        },
+        {
+          label: 'Filter B',
+        },
+        {
+          label: 'Filter C',
+        }
+  ]
+
+  const [options, setOptions] = useState(optionsList)
+
   return (
     <>
       <EuiFlexGroup>
-        <EuiFlexItem data-test-subj="sessionViewProcessEventsSearch" css={{ position: 'relative' }}>
+        <EuiFlexItem data-test-subj="sessionViewProcessEventsSearch">
           <SessionViewSearchBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -159,19 +222,25 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             searchResults={searchResults}
           />
         </EuiFlexItem>
+
+      <EuiFlexItem grow={false} data-test-subj="sessionViewFilterButton">
+        {renderFilterToggleDropDown()}
+      </EuiFlexItem>
+
         <EuiFlexItem grow={false}>
           <EuiButton
             onClick={toggleDetailPanel}
             iconType="list"
-            fill
+            
             data-test-subj="sessionViewDetailPanelToggle"
           >
             <FormattedMessage
               id="xpack.sessionView.buttonOpenDetailPanel"
               defaultMessage="Detail panel"
             />
+          
           </EuiButton>
-        </EuiFlexItem>
+          </EuiFlexItem>
       </EuiFlexGroup>
       <EuiResizableContainer>
         {(EuiResizablePanel, EuiResizableButton, { togglePanel }) => (
