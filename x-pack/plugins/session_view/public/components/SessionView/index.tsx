@@ -16,6 +16,7 @@ import {
   EuiContextMenu,
   EuiSelectable,
   EuiPopoverTitle,
+  EuiPanel,
 } from '@elastic/eui';
 import { EuiResizableButtonProps } from '@elastic/eui/src/components/resizable_container/resizable_button';
 import { EuiResizablePanelProps } from '@elastic/eui/src/components/resizable_container/resizable_panel';
@@ -213,6 +214,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
 
   return (
     <>
+    <EuiPanel color={"subdued"}>
       <EuiFlexGroup>
         <EuiFlexItem data-test-subj="sessionViewProcessEventsSearch">
           <SessionViewSearchBar
@@ -240,8 +242,9 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             />
           
           </EuiButton>
-          </EuiFlexItem>
-      </EuiFlexGroup>
+        </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiPanel>
       <EuiResizableContainer>
         {(EuiResizablePanel, EuiResizableButton, { togglePanel }) => (
           <>
