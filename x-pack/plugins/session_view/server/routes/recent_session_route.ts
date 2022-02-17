@@ -31,6 +31,11 @@ export const registerRecentSessionRoute = (router: IRouter) => {
               'process.entry_leader.interactive': true,
             },
           },
+          runtime_mappings: {
+            'process.entry_leader.interactive': {
+              type: 'boolean',
+            },
+          },
           size: 1,
           sort: [{ '@timestamp': 'desc' }],
         },

@@ -71,6 +71,11 @@ export const doSearch = async (
           'process.entry_leader.entity_id': sessionEntityId,
         },
       },
+      runtime_mappings: {
+        'process.entry_leader.entity_id': {
+          type: 'keyword',
+        },
+      },
       size: PROCESS_EVENTS_PER_PAGE,
       sort: [{ '@timestamp': forward ? 'asc' : 'desc' }],
       search_after: cursor ? [cursor] : undefined,
