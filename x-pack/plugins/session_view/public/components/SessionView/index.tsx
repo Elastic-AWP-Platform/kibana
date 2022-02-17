@@ -13,7 +13,6 @@ import {
   EuiFlexItem,
   EuiResizableContainer,
   EuiPopover,
-  EuiContextMenu,
   EuiSelectable,
   EuiPopoverTitle,
   EuiPanel,
@@ -28,6 +27,10 @@ import { SessionViewDetailPanel } from '../SessionViewDetailPanel';
 import { SessionViewSearchBar } from '../SessionViewSearchBar';
 import { useStyles } from './styles';
 import { useFetchSessionViewProcessEvents } from './hooks';
+import { METRIC_TYPE } from '@kbn/analytics';
+import { IDataPluginServices } from '../../../../../../src/plugins/data/public';
+import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
+import { UsageCollectionSetup } from 'src/plugins/usage_collection/target/types/public/plugin';
 
 interface SessionViewDeps {
   // the root node of the process tree to render. e.g process.entry.entity_id or process.session_leader.entity_id
@@ -40,6 +43,7 @@ interface SessionViewDeps {
  * The main wrapper component for the session view.
  */
 export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionViewDeps) => {
+  
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedProcess, setSelectedProcess] = useState<Process | null>(null);
 
@@ -53,6 +57,13 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
   const [searchResults, setSearchResults] = useState<Process[] | null>(null);
 
   const [isFilterToggleOpen, setFilterToggleOpen] = useState(false)
+
+  const kibana = useKibana<IDataPluginServices>();
+  const { appName="session_view_proto", usageCollection } = kibana.services;
+
+  const reportUiCounter = usageCollection?.reportUiCounter(appName, METRIC_TYPE.CLICK, 'TEST A5');
+
+  console.log(kibana)
 
   const {
     data,
@@ -173,6 +184,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
 
   const toggleDetailPanel = () => {
     setIsDetailOpen(!isDetailOpen);
+    reportUiCounter();
   };
 
   const toggleFilterButton =() => {
@@ -180,6 +192,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
   }
 
   const closeFilterButton =() =>{
+    //reportUiCounter();
     setFilterToggleOpen(false)
   }
 
