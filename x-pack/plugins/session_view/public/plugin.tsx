@@ -17,6 +17,7 @@ import {
 import { SessionViewTableProcessTree } from './components/SessionViewTableProcessTree';
 import { PLUGIN_ID, PLUGIN_NAME } from '../common';
 import { SessionViewConfigType, SessionViewServices } from './types';
+import { UsageCollectionSetup } from 'src/plugins/usage_collection/target/types/public/plugin';
 
 const createTimelineStore = (reducer: Reducer) => {
   // No initial state for now
@@ -34,7 +35,7 @@ export class SessionViewPlugin implements Plugin {
     this.kibanaVersion = initializerContext.env.packageInfo.version;
   }
 
-  public setup(core: CoreSetup<SessionViewServices, void>) {
+  public setup(core: CoreSetup<SessionViewServices, void>, plugins:{usageCollection?:UsageCollectionSetup}) {
     const kibanaVersion = this.kibanaVersion;
     const config = this.initializerContext.config.get<SessionViewConfigType>();
 
@@ -53,6 +54,7 @@ export class SessionViewPlugin implements Plugin {
           depsServices: startDepsServices,
           appMountParams: params,
           version: kibanaVersion,
+          usageCollection:plugins.usageCollection
         });
       },
     });

@@ -19,6 +19,7 @@ import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
 import { BASE_PATH } from '../../../common/constants';
 import { SessionLeaderTable } from '../SessionLeaderTable';
+import { TrackApplicationView } from '../../../../../../src/plugins/usage_collection/public';
 
 export const SessionLeaderTablePage = (props: RouteComponentProps) => {
   const { chrome, http } = useKibana<CoreStart>().services;
@@ -43,7 +44,9 @@ export const SessionLeaderTablePage = (props: RouteComponentProps) => {
         <EuiSpacer />
         <EuiFlexGroup>
           <EuiFlexItem>
+          <TrackApplicationView viewId="SessionLeaderTable">
             <SessionLeaderTable />
+          </TrackApplicationView>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiPageContent>

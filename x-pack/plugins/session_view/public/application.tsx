@@ -18,6 +18,7 @@ import { EuiThemeProvider } from '../../../../src/plugins/kibana_react/common';
 
 import type { SessionViewConfigType } from './types';
 import { Application } from './components/Application';
+import { UsageCollectionSetup } from '../../../../src/plugins/usage_collection/public';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DependencyServices {}
@@ -28,15 +29,18 @@ interface RenderAppProps {
   appMountParams: AppMountParameters;
   version: string;
   config: SessionViewConfigType;
+  usageCollection?: UsageCollectionSetup
 }
 
 // Initializing react-query
 const queryClient = new QueryClient();
 
 export const renderApp = (props: RenderAppProps) => {
-  const { coreStart, depsServices, appMountParams, version } = props;
+  const { coreStart, depsServices, appMountParams, version, usageCollection } = props;
 
   const { element, history } = appMountParams;
+
+  const ApplicationUsageTrackingProvider = usageCollection?.components.ApplicationUsageTrackingProvider ?? React.Fragment;
 
   const renderSessionViewApp = () => {
     const services = {
@@ -49,6 +53,7 @@ export const renderApp = (props: RenderAppProps) => {
       <KibanaContextProvider services={services}>
         <Router history={history}>
           <EuiErrorBoundary>
+          <ApplicationUsageTrackingProvider>
             <I18nProvider>
               <EuiThemeProvider>
                 <QueryClientProvider client={queryClient}>
@@ -57,6 +62,7 @@ export const renderApp = (props: RenderAppProps) => {
                 </QueryClientProvider>
               </EuiThemeProvider>
             </I18nProvider>
+          </ApplicationUsageTrackingProvider>
           </EuiErrorBoundary>
         </Router>
       </KibanaContextProvider>
