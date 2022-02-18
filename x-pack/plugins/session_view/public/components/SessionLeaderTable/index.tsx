@@ -286,10 +286,30 @@ export const SessionLeaderTable = (props: SessionLeaderTableProps) => {
       loadingText: 'Loading text',
       footerText: 'Session Entry Leaders',
       onStateChange: handleStateChange,
-      query: { query: '', language: 'kuery' },
+      query: {
+        query: `process.is_entry_leader: true and process.entry_leader.interactive: true`,
+        language: 'kuery',
+      },
       renderCellValue,
       rowRenderers: NO_ROW_RENDERERS,
-      runtimeMappings: {},
+      runtimeMappings: {
+        'process.entity_id': {
+          type: 'keyword',
+        },
+        'process.entry_leader.entity_id': {
+          type: 'keyword',
+        },
+        'process.entry_leader.interactive': {
+          type: 'boolean',
+        },
+        'process.is_entry_leader': {
+          type: 'boolean',
+          script: {
+            source:
+              "emit(doc.containsKey('process.entry_leader.entity_id') && doc['process.entry_leader.entity_id'].size() > 0 && doc['process.entity_id'].value == doc['process.entry_leader.entity_id'].value)",
+          },
+        },
+      },
       setRefetch: handleSetRefetch,
       sort: [],
       filterStatus: 'open',
