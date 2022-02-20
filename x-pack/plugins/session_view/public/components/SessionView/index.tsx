@@ -58,18 +58,12 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Process[] | null>(null);
 
-  const [filterChangeTracker, setChange] = useState(false)
-
   const [isFilterToggleOpen, setFilterToggleOpen] = useState(false)
 
   const kibana = useKibana<SessionViewDeps>();
   const { usageCollection } = kibana.services;
 
   const reportUiCounter = usageCollection?.reportUiCounter("HELLO WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
-
-  useEffect(()=>{
-    console.log("USEEFFECT ON ACTION")
-  }, [filterChangeTracker])
 
   const getBoolean = (value:string) => {
     if(value === "on"){
@@ -93,9 +87,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
 ]
 
   const [options, setOptions] = useState(optionsList)
-  let checkedFilterOptions = options.map(a=>getBoolean(a.checked))
-  console.log("TimeStamp status: " + checkedFilterOptions[0])
-  console.log("Verbose mode status: " + checkedFilterOptions[1])
+  const checkedFilterOptions = options.map(a=>getBoolean(a.checked))
 
   const {
     data,
@@ -157,7 +149,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
             fetchNextPage={fetchNextPage}
             fetchPreviousPage={fetchPreviousPage}
             setSearchResults={setSearchResults}
-            isFilterToggleOpen={checkedFilterOptions[0]}
+            checkedFilterOptions={checkedFilterOptions}
           />
         </div>
       );
@@ -216,7 +208,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
 
   const handleFilterChange = (value) =>{
     setOptions(value)
-    setChange(!filterChangeTracker)
   }
 
   const toggleDetailPanel = () => {
@@ -239,7 +230,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   const FilterButton = (
     <EuiFlexItem grow={false}>
      <EuiButtonIcon
-       iconType="filter"
+       iconType="eye"
        display="base"
        onClick={toggleFilterButton}
        size="m"
@@ -269,14 +260,12 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
           <EuiButton
             onClick={toggleDetailPanel}
             iconType="list"
-            
             data-test-subj="sessionViewDetailPanelToggle"
           >
             <FormattedMessage
               id="xpack.sessionView.buttonOpenDetailPanel"
               defaultMessage="Detail panel"
             />
-          
           </EuiButton>
         </EuiFlexItem>
         </EuiFlexGroup>
@@ -291,7 +280,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
             >
               {renderProcessTree()}
             </EuiResizablePanel>
-
             {renderSessionViewDetailPanel(EuiResizableButton, EuiResizablePanel)}
           </>
         )}

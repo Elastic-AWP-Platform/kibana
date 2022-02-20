@@ -36,7 +36,7 @@ interface ProcessTreeDeps {
   onProcessSelected: (process: Process) => void;
   setSearchResults?: (results: Process[]) => void;
 
-  filterChangeTracker?: boolean;
+  checkedFilterOptions?: Array<boolean>;
 }
 
 export const ProcessTree = ({
@@ -52,7 +52,7 @@ export const ProcessTree = ({
   selectedProcess,
   onProcessSelected,
   setSearchResults,
-  isFilterToggleOpen,
+  checkedFilterOptions,
 }: ProcessTreeDeps) => {
   const styles = useStyles();
 
@@ -170,7 +170,7 @@ export const ProcessTree = ({
           isSessionLeader
           process={sessionLeader}
           onProcessSelected={onProcessSelected}
-          isFilterToggleOpen={isFilterToggleOpen}
+          checkedFilterOptions={checkedFilterOptions}
         />
       )}
       <div
