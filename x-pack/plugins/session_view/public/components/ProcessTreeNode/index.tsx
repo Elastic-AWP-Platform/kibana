@@ -44,6 +44,13 @@ export function ProcessTreeNode({
   const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(isSessionLeader);
   const { searchMatched } = process;
 
+  const parseTimestamp = (date:string) => {
+    const timeStamp = new Date(date)
+    const month = timeStamp.toLocaleString('default',{month:'long'})
+    return month.substring(3,0) + " " + timeStamp.getDate() + ", " + timeStamp.getFullYear() + " @ " + timeStamp.getHours() + ":" + timeStamp.getMinutes() + ":" + timeStamp.getSeconds() + ":" + timeStamp.getMilliseconds()
+
+  }
+
   useEffect(() => {
     setChildrenExpanded(isSessionLeader || process.autoExpand);
   }, [isSessionLeader, process.autoExpand]);
@@ -222,6 +229,8 @@ export function ProcessTreeNode({
       exit_code: exitCode,
     } = process.getDetails().process;
 
+    const timeStampsNormal = parseTimestamp(process.getDetails()["@timestamp"])
+
     if (hasExec) {
       return (
         <span ref={textRef}>
@@ -229,7 +238,7 @@ export function ProcessTreeNode({
           <span css={styles.darkText}>{args[0]}</span>&nbsp;
           {args.slice(1).join(' ')}
           {exitCode && <small> [exit_code: {exitCode}]</small>}
-          {checkedFilterOptions[0]?<span css={styles.timeStamp}>{process.getDetails()["@timestamp"]}</span>:null}&nbsp;
+          {checkedFilterOptions[0]?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
         </span>
       );
     } else {
@@ -237,7 +246,7 @@ export function ProcessTreeNode({
         <span ref={textRef}>
           <span css={styles.workingDir}>{workingDirectory}</span>&nbsp;
           <span css={styles.darkText}>{executable}</span>&nbsp;
-          {checkedFilterOptions[0]?<span css={styles.timeStamp}>{process.getDetails()["@timestamp"]}</span>:null}&nbsp;
+          {checkedFilterOptions[0]?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
         </span>
       );
     }
