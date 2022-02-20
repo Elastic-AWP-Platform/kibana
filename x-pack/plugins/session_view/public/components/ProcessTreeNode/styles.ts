@@ -151,6 +151,11 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
       color: colors.successText,
     };
 
+    const timeStamp: CSSObject = {
+      float: 'right',
+      position: 'relative'
+    }
+
     const userEnteredIcon: CSSObject = {
       position: 'absolute',
       width: '9px',
@@ -172,6 +177,7 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
       processNode,
       wrapper,
       workingDir,
+      timeStamp,
       userEnteredIcon,
       buttonArrow,
       getButtonStyle,

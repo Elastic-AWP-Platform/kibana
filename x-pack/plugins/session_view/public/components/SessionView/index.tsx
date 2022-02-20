@@ -4,7 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useState, ComponentType } from 'react';
+import React, { useState, ComponentType, useEffect } from 'react';
 import {
   EuiEmptyPrompt,
   EuiButton,
@@ -32,17 +32,19 @@ import { IDataPluginServices } from '../../../../../../src/plugins/data/public';
 import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
 import { UsageCollectionSetup } from 'src/plugins/usage_collection/target/types/public/plugin';
 
+
 interface SessionViewDeps {
   // the root node of the process tree to render. e.g process.entry.entity_id or process.session_leader.entity_id
   sessionEntityId: string;
   height?: number;
   jumpToEvent?: ProcessEvent;
+  usageCollection?: UsageCollectionSetup
 }
 
 /**
  * The main wrapper component for the session view.
  */
-export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionViewDeps) => {
+export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionViewDeps) => {
   
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedProcess, setSelectedProcess] = useState<Process | null>(null);
@@ -56,14 +58,44 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Process[] | null>(null);
 
+  const [filterChangeTracker, setChange] = useState(false)
+
   const [isFilterToggleOpen, setFilterToggleOpen] = useState(false)
 
-  const kibana = useKibana<IDataPluginServices>();
-  const { appName="session_view_proto", usageCollection } = kibana.services;
+  const kibana = useKibana<SessionViewDeps>();
+  const { usageCollection } = kibana.services;
 
-  const reportUiCounter = usageCollection?.reportUiCounter(appName, METRIC_TYPE.CLICK, 'TEST A5');
+  const reportUiCounter = usageCollection?.reportUiCounter("HELLO WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
 
-  console.log(kibana)
+  useEffect(()=>{
+    console.log("USEEFFECT ON ACTION")
+  }, [filterChangeTracker])
+
+  const getBoolean = (value:string) => {
+    if(value === "on"){
+      return true
+    }
+    else
+      return false
+  }
+
+  const optionsList = [
+    {
+      label: 'Timestamp',
+      value: 'Timestamp',
+      checked: 'on'
+    },
+    {
+      label: 'Verbose mode',
+      value: 'Verbose mode',
+      checked: 'on'
+    }
+]
+
+  const [options, setOptions] = useState(optionsList)
+  let checkedFilterOptions = options.map(a=>getBoolean(a.checked))
+  console.log("TimeStamp status: " + checkedFilterOptions[0])
+  console.log("Verbose mode status: " + checkedFilterOptions[1])
 
   const {
     data,
@@ -125,6 +157,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             fetchNextPage={fetchNextPage}
             fetchPreviousPage={fetchPreviousPage}
             setSearchResults={setSearchResults}
+            isFilterToggleOpen={checkedFilterOptions[0]}
           />
         </div>
       );
@@ -155,7 +188,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
         </>
       );
     }
-
     return <></>;
   };
 
@@ -169,10 +201,10 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
         >
           <EuiSelectable 
             options={options}
-            onChange={newOptions => setOptions(newOptions)}>
+            onChange={newOptions => handleFilterChange(newOptions)}>
             {(list) => (
               <div style={{width:240}}>
-              <EuiPopoverTitle>TEST TITLE</EuiPopoverTitle>
+              <EuiPopoverTitle>Display options</EuiPopoverTitle>
               {list}
               </div>
             )}
@@ -182,9 +214,14 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
     )
   }
 
+  const handleFilterChange = (value) =>{
+    setOptions(value)
+    setChange(!filterChangeTracker)
+  }
+
   const toggleDetailPanel = () => {
     setIsDetailOpen(!isDetailOpen);
-    reportUiCounter();
+    reportUiCounter;
   };
 
   const toggleFilterButton =() => {
@@ -192,7 +229,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
   }
 
   const closeFilterButton =() =>{
-    //reportUiCounter();
     setFilterToggleOpen(false)
   }
 
@@ -211,20 +247,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
     </EuiFlexItem>
   ) 
 
-  const optionsList = [
-        {
-          label: 'Filter A',
-        },
-        {
-          label: 'Filter B',
-        },
-        {
-          label: 'Filter C',
-        }
-  ]
-
-  const [options, setOptions] = useState(optionsList)
-
   return (
     <>
     <EuiPanel color={"subdued"}>
@@ -240,6 +262,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
 
       <EuiFlexItem grow={false} data-test-subj="sessionViewFilterButton">
         {renderFilterToggleDropDown()}
+        
       </EuiFlexItem>
 
         <EuiFlexItem grow={false}>

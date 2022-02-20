@@ -23,6 +23,7 @@ interface ProcessDeps {
   isSessionLeader?: boolean;
   depth?: number;
   onProcessSelected?: (process: Process) => void;
+  isFilterToggleOpen?: boolean
 }
 
 /**
@@ -34,16 +35,19 @@ export function ProcessTreeNode({
   isSessionLeader = false,
   depth = 0,
   onProcessSelected,
+  isFilterToggleOpen,
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
 
   const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
   const [alertsExpanded, setAlertsExpanded] = useState(false);
   const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(isSessionLeader);
+  const [track, setTrack] = useState(false)
   const { searchMatched } = process;
 
   useEffect(() => {
     setChildrenExpanded(isSessionLeader || process.autoExpand);
+    setTrack(!track)
   }, [isSessionLeader, process.autoExpand]);
 
   const processDetails = useMemo(() => {
@@ -103,6 +107,7 @@ export function ProcessTreeNode({
               process={child}
               depth={newDepth}
               onProcessSelected={onProcessSelected}
+              isFilterToggleOpen={isFilterToggleOpen}
             />
           );
         })}
@@ -110,10 +115,17 @@ export function ProcessTreeNode({
     );
   };
 
+  let testString = "Alpha"
+
+  if(track == true)
+    testString = "Alpha_TRUE"
+  else if(track == false)
+    testString = "Alpha_FALSE"
+
   const getExpandedIcon = (expanded: boolean) => {
     return expanded ? 'arrowUp' : 'arrowDown';
   };
-
+  console.log(onProcessSelected)
   const renderButtons = () => {
     const buttons = [];
     const childCount = process.getChildren().length;
@@ -218,6 +230,7 @@ export function ProcessTreeNode({
       working_directory: workingDirectory,
       exit_code: exitCode,
     } = process.getDetails().process;
+
     if (hasExec) {
       return (
         <span ref={textRef}>
@@ -225,6 +238,7 @@ export function ProcessTreeNode({
           <span css={styles.darkText}>{args[0]}</span>&nbsp;
           {args.slice(1).join(' ')}
           {exitCode && <small> [exit_code: {exitCode}]</small>}
+          {isFilterToggleOpen?<span css={styles.timeStamp}>{process.getDetails()["@timestamp"]}</span>:null}&nbsp;
         </span>
       );
     } else {
@@ -232,6 +246,7 @@ export function ProcessTreeNode({
         <span ref={textRef}>
           <span css={styles.workingDir}>{workingDirectory}</span>&nbsp;
           <span css={styles.darkText}>{executable}</span>&nbsp;
+          {isFilterToggleOpen?<span css={styles.timeStamp}>{process.getDetails()["@timestamp"]}</span>:null}&nbsp;
         </span>
       );
     }
