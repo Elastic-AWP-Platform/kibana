@@ -231,7 +231,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
     <EuiFlexItem grow={false}>
      <EuiButtonIcon
        iconType="eye"
-       display="base"
+       display={isFilterToggleOpen?"base":"empty"}
        onClick={toggleFilterButton}
        size="m"
      />
