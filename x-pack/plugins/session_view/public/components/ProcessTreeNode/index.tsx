@@ -131,7 +131,7 @@ export function ProcessTreeNode({
     if (isSessionLeader) {
       const groupLeaderCount = process.getChildren(true).length;
       const sameGroupCount = childCount - groupLeaderCount;
-
+/*
       if (sameGroupCount > 0) {
         buttons.push(
           <EuiToolTip
@@ -168,7 +168,7 @@ export function ProcessTreeNode({
           </EuiToolTip>
         );
       }
-    } else if (childCount > 0) {
+    } else */}if (childCount > 0) {
       buttons.push(
         <EuiButton
           key="child-processes-button"
