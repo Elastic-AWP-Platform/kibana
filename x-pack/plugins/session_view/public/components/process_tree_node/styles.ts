@@ -9,8 +9,6 @@ import { useMemo } from 'react';
 import { useEuiTheme } from '@elastic/eui';
 import { CSSObject } from '@emotion/react';
 
-const TREE_INDENT = 32;
-
 interface StylesDeps {
   depth: number;
   hasAlerts: boolean;
@@ -29,31 +27,33 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
   const cached = useMemo(() => {
     const { colors, border, font, size } = euiTheme;
 
+    const TREE_INDENT = euiTheme.base * 2;
+
     const darkText: CSSObject = {
       color: colors.text,
     };
 
     const searchHighlight = `
-      background-color: yellow;
-      color: black;
+      background-color: ${colors.highlight};
+      color: ${colors.fullShade};
       border-radius: ${border.radius.medium};
     `;
 
     const children: CSSObject = {
       color: colors.ghost,
-      marginLeft: '16px',
-      paddingLeft: '8px',
-      borderLeft: `3px dotted ${colors.lightShade}`,
-      marginTop: '8px',
+      marginLeft: size.s,
+      paddingLeft: size.s,
+      borderLeft: border.editable,
+      marginTop: size.s,
       '&:after': {
         position: 'absolute',
         content: `''`,
         bottom: 0,
-        left: '-5px',
+        left: size.xs,
         backgroundColor: colors.lightShade,
-        width: '7px',
-        height: '3px',
-        borderRadius: '2px',
+        width: size.s,
+        height: size.xxs,
+        borderRadius: size.xxs,
       },
     };
 
@@ -131,7 +131,7 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
         pointerEvents: 'none',
         content: `''`,
         marginLeft: `-${depth * TREE_INDENT}px`,
-        borderLeft: `4px solid ${borderColor}`,
+        borderLeft: `${size.xs} solid ${borderColor}`,
         backgroundColor: bgColor,
         width: `calc(100% + ${depth * TREE_INDENT}px)`,
       },
@@ -143,8 +143,8 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
       verticalAlign: 'middle',
       color: colors.mediumShade,
       wordBreak: 'break-all',
-      minHeight: '24px',
-      lineHeight: '24px',
+      minHeight: size.l,
+      lineHeight: size.l,
     };
 
     const workingDir: CSSObject = {
@@ -156,12 +156,12 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
       width: '9px',
       height: '9px',
       marginLeft: '-11px',
-      marginTop: '8px',
+      marginTop: size.s,
     };
 
     const alertDetails: CSSObject = {
       padding: size.s,
-      border: `3px dotted ${colors.lightShade}`,
+      border: border.editable,
       borderRadius: border.radius.medium,
     };
 

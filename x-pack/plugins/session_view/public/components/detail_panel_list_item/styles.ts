@@ -6,6 +6,7 @@
  */
 
 import { useMemo } from 'react';
+import { useEuiTheme } from '@elastic/eui';
 import { CSSObject } from '@emotion/react';
 
 interface StylesDeps {
@@ -13,11 +14,13 @@ interface StylesDeps {
 }
 
 export const useStyles = ({ display }: StylesDeps) => {
+  const { euiTheme } = useEuiTheme();
+
   const cached = useMemo(() => {
     const item: CSSObject = {
       display,
       alignItems: 'center',
-      padding: '8px',
+      padding: euiTheme.size.s,
       width: '100%',
       fontSize: 'inherit',
       fontWeight: 'inherit',
@@ -27,7 +30,7 @@ export const useStyles = ({ display }: StylesDeps) => {
     const copiableItem: CSSObject = {
       ...item,
       position: 'relative',
-      borderRadius: '6px',
+      borderRadius: euiTheme.border.radius.medium,
       '&:hover': {
         background: '#0077CC1A',
       },
@@ -37,7 +40,7 @@ export const useStyles = ({ display }: StylesDeps) => {
       item,
       copiableItem,
     };
-  }, [display]);
+  }, [display, euiTheme]);
 
   return cached;
 };
