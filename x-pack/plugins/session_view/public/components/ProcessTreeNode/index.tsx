@@ -53,6 +53,7 @@ export function ProcessTreeNode({
 
   useEffect(() => {
     setChildrenExpanded(isSessionLeader || process.autoExpand);
+    
   }, [isSessionLeader, process.autoExpand]);
 
   const processDetails = useMemo(() => {
@@ -95,7 +96,7 @@ export function ProcessTreeNode({
   const { tty } = processDetails.process;
 
   const renderChildren = () => {
-    const children = process.getChildren(checkedFilterOptions[1]);
+    const children = process.getChildren(showGroupLeadersOnly);
 
     if (!childrenExpanded || !children || children.length === 0) {
       return null;
@@ -149,7 +150,7 @@ export function ProcessTreeNode({
             <EuiButton
               key="child-processes-button"
               css={styles.getButtonStyle(ButtonType.children)}
-              onClick={() => setShowGroupLeadersOnly(!checkedFilterOptions[0])}
+              onClick={() => setShowGroupLeadersOnly(!showGroupLeadersOnly)}
               data-test-subj="processTreeNodeChildProcessesButton"
             >
               <FormattedMessage
@@ -162,13 +163,13 @@ export function ProcessTreeNode({
               <EuiIcon
                 css={styles.buttonArrow}
                 size="s"
-                type={getExpandedIcon(checkedFilterOptions[0])}
+                type={getExpandedIcon(checkedFilterOptions[1])}
               />
             </EuiButton>
           </EuiToolTip>
         );
       }
-    } else */}if (childCount > 0) {
+  } else */}if (childCount > 0 && !isSessionLeader) {
       buttons.push(
         <EuiButton
           key="child-processes-button"
