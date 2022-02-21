@@ -202,7 +202,7 @@ export function ProcessTreeNode({
         <EuiButton
           key="child-processes-button"
           css={styles.getButtonStyle(ButtonType.children)}
-          onClick={() => {setChildrenExpanded(!childrenExpanded);setShowGroupLeadersOnly(!showGroupLeadersOnly)}}
+          onClick={() => {setChildrenExpanded(!childrenExpanded);setShowGroupLeadersOnly(!checkedFilterOptions[1])}}
           data-test-subj="processTreeNodeChildProcessesButton"
         >
           <FormattedMessage
