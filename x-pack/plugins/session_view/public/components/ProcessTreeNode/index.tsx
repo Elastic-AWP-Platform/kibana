@@ -35,7 +35,7 @@ export function ProcessTreeNode({
   isSessionLeader = false,
   depth = 0,
   onProcessSelected,
-  checkedFilterOptions,
+  checkedFilterOptions = [true,true],
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
 
@@ -149,7 +149,7 @@ export function ProcessTreeNode({
             <EuiButton
               key="child-processes-button"
               css={styles.getButtonStyle(ButtonType.children)}
-              onClick={() => setShowGroupLeadersOnly(!showGroupLeadersOnly)}
+              onClick={() => setShowGroupLeadersOnly(!checkedFilterOptions[0])}
               data-test-subj="processTreeNodeChildProcessesButton"
             >
               <FormattedMessage
@@ -162,7 +162,7 @@ export function ProcessTreeNode({
               <EuiIcon
                 css={styles.buttonArrow}
                 size="s"
-                type={getExpandedIcon(showGroupLeadersOnly)}
+                type={getExpandedIcon(checkedFilterOptions[0])}
               />
             </EuiButton>
           </EuiToolTip>
@@ -318,7 +318,7 @@ export function ProcessTreeNode({
         <div data-test-subj="processTreeNodeRow" css={styles.wrapper} onClick={onProcessClicked}>
           {isSessionLeader ? renderSessionLeader() : renderProcess()}
           {renderRootEscalation()}
-          
+          {renderButtons()}
         </div>
       </div>
       {alertsExpanded && <ProcessTreeAlerts alerts={alerts} />}
