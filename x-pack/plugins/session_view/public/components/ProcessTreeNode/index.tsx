@@ -121,6 +121,34 @@ export function ProcessTreeNode({
     );
   };
 
+  const renderChildren2 = () => {
+    const children = process.getChildren(!showGroupLeadersOnly);
+
+    if (!childrenExpanded || !children || children.length === 0) {
+      return null;
+    }
+
+    const newDepth = depth + 1;
+
+    return (
+      <div css={styles.children}>
+        {children.map((child: Process) => {
+          return (
+            <ProcessTreeNode
+              key={child.id}
+              process={child}
+              depth={newDepth}
+              onProcessSelected={onProcessSelected}
+              checkedFilterOptions={checkedFilterOptions}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+
+  
+
   const getExpandedIcon = (expanded: boolean) => {
     return expanded ? 'arrowUp' : 'arrowDown';
   };
@@ -174,7 +202,7 @@ export function ProcessTreeNode({
         <EuiButton
           key="child-processes-button"
           css={styles.getButtonStyle(ButtonType.children)}
-          onClick={() => setChildrenExpanded(!childrenExpanded)}
+          onClick={() => {setChildrenExpanded(!childrenExpanded);setShowGroupLeadersOnly(!showGroupLeadersOnly)}}
           data-test-subj="processTreeNodeChildProcessesButton"
         >
           <FormattedMessage
@@ -323,7 +351,7 @@ export function ProcessTreeNode({
         </div>
       </div>
       {alertsExpanded && <ProcessTreeAlerts alerts={alerts} />}
-      <div>{renderChildren()}</div>
+      <div>{checkedFilterOptions[1]?renderChildren():renderChildren2()}</div>
     </>
   );
 }
