@@ -6,7 +6,7 @@
  */
 
 import { useMemo } from 'react';
-import { useEuiTheme } from '@elastic/eui';
+import { useEuiTheme, transparentize } from '@elastic/eui';
 import { CSSObject } from '@emotion/react';
 
 interface StylesDeps {
@@ -32,7 +32,7 @@ export const useStyles = ({ display }: StylesDeps) => {
       position: 'relative',
       borderRadius: euiTheme.border.radius.medium,
       '&:hover': {
-        background: '#0077CC1A',
+        background: transparentize(euiTheme.colors.primary, 0.1),
       },
     };
 
