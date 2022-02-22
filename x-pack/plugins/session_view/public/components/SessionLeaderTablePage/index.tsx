@@ -44,7 +44,7 @@ export const SessionLeaderTablePage = (props: RouteComponentProps) => {
         <EuiSpacer />
         <EuiFlexGroup>
           <EuiFlexItem>
-          <TrackApplicationView viewId="SessionLeaderTable">
+          <TrackApplicationView viewId="SessionLeaderTableTESTTRACKING">
             <SessionLeaderTable />
           </TrackApplicationView>
           </EuiFlexItem>
