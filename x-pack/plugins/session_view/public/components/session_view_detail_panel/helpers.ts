@@ -56,7 +56,7 @@ export const getSelectedTabContent = (tabs: EuiTabProps[], selectedTabId: string
   const selectedTab = tabs.find((tab) => tab.id === selectedTabId);
 
   if (selectedTab) {
-    return selectedTab?.content || null;
+    return selectedTab.content;
   }
 
   return null;
