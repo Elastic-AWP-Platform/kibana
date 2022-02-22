@@ -114,6 +114,8 @@ export function ProcessTreeNode({
     return expanded ? 'arrowUp' : 'arrowDown';
   };
 
+  const onShowGroupLeaderOnlyClick = () => setShowGroupLeadersOnly(!showGroupLeadersOnly);
+
   const renderButtons = () => {
     const buttons = [];
     const childCount = process.getChildren().length;
@@ -137,9 +139,9 @@ export function ProcessTreeNode({
             }
           >
             <EuiButton
-              key="child-processes-button"
+              key="group-leaders-only-button"
               css={styles.getButtonStyle(ButtonType.children)}
-              onClick={() => setShowGroupLeadersOnly(!showGroupLeadersOnly)}
+              onClick={onShowGroupLeaderOnlyClick}
               data-test-subj="processTreeNodeChildProcessesButton"
             >
               <FormattedMessage
