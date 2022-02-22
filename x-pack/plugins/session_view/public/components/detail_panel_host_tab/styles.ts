@@ -6,9 +6,12 @@
  */
 
 import { useMemo } from 'react';
+import { useEuiTheme } from '@elastic/eui';
 import { CSSObject } from '@emotion/react';
 
 export const useStyles = () => {
+  const { euiTheme } = useEuiTheme();
+
   const cached = useMemo(() => {
     const description: CSSObject = {
       width: 'calc(100% - 28px)',
@@ -19,19 +22,19 @@ export const useStyles = () => {
 
     const descriptionSemibold: CSSObject = {
       ...description,
-      fontWeight: 500,
+      fontWeight: euiTheme.font.weight.medium,
     };
 
     const executableAction: CSSObject = {
-      fontWeight: 600,
-      paddingLeft: '4px',
+      fontWeight: euiTheme.font.weight.semiBold,
+      paddingLeft: euiTheme.size.xs,
     };
 
     return {
       descriptionSemibold,
       executableAction,
     };
-  }, []);
+  }, [euiTheme]);
 
   return cached;
 };
