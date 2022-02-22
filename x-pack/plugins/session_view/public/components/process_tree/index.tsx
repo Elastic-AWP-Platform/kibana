@@ -35,6 +35,8 @@ interface ProcessTreeDeps {
   selectedProcess?: Process | null;
   onProcessSelected: (process: Process) => void;
   setSearchResults?: (results: Process[]) => void;
+
+  checkedFilterOptions?: Array<boolean>;
 }
 
 export const ProcessTree = ({
@@ -50,6 +52,7 @@ export const ProcessTree = ({
   selectedProcess,
   onProcessSelected,
   setSearchResults,
+  checkedFilterOptions,
 }: ProcessTreeDeps) => {
   const styles = useStyles();
 
@@ -154,7 +157,7 @@ export const ProcessTree = ({
       </EuiButton>
     );
   }
-
+  
   return (
     <div ref={scrollerRef} css={styles.scroller} data-test-subj="sessionViewProcessTree">
       {hasPreviousPage &&
@@ -167,6 +170,7 @@ export const ProcessTree = ({
           isSessionLeader
           process={sessionLeader}
           onProcessSelected={onProcessSelected}
+          checkedFilterOptions={checkedFilterOptions}
         />
       )}
       <div
@@ -182,3 +186,4 @@ export const ProcessTree = ({
     </div>
   );
 };
+

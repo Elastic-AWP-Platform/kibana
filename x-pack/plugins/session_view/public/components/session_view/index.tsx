@@ -1,16 +1,22 @@
+
 /*
  * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
  * or more contributor license agreements. Licensed under the Elastic License
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useState, ComponentType } from 'react';
+import React, { useState, ComponentType, useEffect } from 'react';
 import {
   EuiEmptyPrompt,
   EuiButton,
+  EuiButtonIcon,
   EuiFlexGroup,
   EuiFlexItem,
   EuiResizableContainer,
+  EuiPopover,
+  EuiSelectable,
+  EuiPopoverTitle,
+  EuiPanel,
 } from '@elastic/eui';
 import { EuiResizableButtonProps } from '@elastic/eui/src/components/resizable_container/resizable_button';
 import { EuiResizablePanelProps } from '@elastic/eui/src/components/resizable_container/resizable_panel';
@@ -22,18 +28,25 @@ import { SessionViewDetailPanel } from '../session_view_detail_panel';
 import { SessionViewSearchBar } from '../session_view_search_bar';
 import { useStyles } from './styles';
 import { useFetchSessionViewProcessEvents } from './hooks';
+import { METRIC_TYPE } from '@kbn/analytics';
+import { IDataPluginServices } from '../../../../../../src/plugins/data/public';
+import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
+import { UsageCollectionSetup } from 'src/plugins/usage_collection/target/types/public/plugin';
+
 
 interface SessionViewDeps {
   // the root node of the process tree to render. e.g process.entry.entity_id or process.session_leader.entity_id
   sessionEntityId: string;
   height?: number;
   jumpToEvent?: ProcessEvent;
+  usageCollection?: UsageCollectionSetup
 }
 
 /**
  * The main wrapper component for the session view.
  */
-export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionViewDeps) => {
+export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionViewDeps) => {
+  
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedProcess, setSelectedProcess] = useState<Process | null>(null);
 
@@ -45,6 +58,37 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Process[] | null>(null);
+
+  const [isFilterToggleOpen, setFilterToggleOpen] = useState(false)
+
+  const kibana = useKibana<SessionViewDeps>();
+  const { usageCollection } = kibana.services;
+
+  const reportUiCounter = usageCollection?.reportUiCounter("HELLO WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
+
+  const getBoolean = (value:string) => {
+    if(value === "on"){
+      return true
+    }
+    else
+      return false
+  }
+
+  const optionsList = [
+    {
+      label: 'Timestamp',
+      value: 'Timestamp',
+      checked: 'on'
+    },
+    {
+      label: 'Verbose mode',
+      value: 'Verbose mode',
+      checked: 'on'
+    }
+]
+
+  const [options, setOptions] = useState(optionsList)
+  const checkedFilterOptions = options.map(a=>getBoolean(a.checked))
 
   const {
     data,
@@ -61,14 +105,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
     return (
       <EuiEmptyPrompt
         data-test-subj="sessionViewProcessEventsEmpty"
-        title={
-          <h2>
-            <FormattedMessage
-              id="xpack.sessionView.emptyDataMessage"
-              defaultMessage="No data to render"
-            />
-          </h2>
-        }
+        title={<h2>No data to render</h2>}
         body={<p>No process events found for this query.</p>}
       />
     );
@@ -92,22 +129,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
         <EuiEmptyPrompt
           iconType="alert"
           color="danger"
-          title={
-            <h2>
-              <FormattedMessage
-                id="xpack.sessionView.errorHeading"
-                defaultMessage="Error loading Session View"
-              />
-            </h2>
-          }
-          body={
-            <p>
-              <FormattedMessage
-                id="xpack.sessionView.errorMessage"
-                defaultMessage="There was an error loading the Session View."
-              />
-            </p>
-          }
+          title={<h2>Error loading Session View</h2>}
+          body={<p>There was an error loading the Session View.</p>}
         />
       );
     }
@@ -127,6 +150,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             fetchNextPage={fetchNextPage}
             fetchPreviousPage={fetchPreviousPage}
             setSearchResults={setSearchResults}
+            checkedFilterOptions={checkedFilterOptions}
           />
         </div>
       );
@@ -157,22 +181,69 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
         </>
       );
     }
-
     return <></>;
   };
 
+  const renderFilterToggleDropDown = () => {
+    return(
+      <>
+        <EuiPopover
+          button={FilterButton}
+          isOpen={isFilterToggleOpen}
+          closePopover={closeFilterButton}
+        >
+          <EuiSelectable 
+            options={options}
+            onChange={newOptions => handleFilterChange(newOptions)}>
+            {(list) => (
+              <div style={{width:240}}>
+              <EuiPopoverTitle>Display options</EuiPopoverTitle>
+              {list}
+              </div>
+            )}
+          </EuiSelectable>
+        </EuiPopover>
+      </>
+    )
+  }
+
+  const handleFilterChange = (value) =>{
+    setOptions(value)
+  }
+
   const toggleDetailPanel = () => {
     setIsDetailOpen(!isDetailOpen);
+    reportUiCounter;
   };
+
+  const toggleFilterButton =() => {
+    setFilterToggleOpen(!isFilterToggleOpen)
+  }
+
+  const closeFilterButton =() =>{
+    setFilterToggleOpen(false)
+  }
 
   if (!isFetching && !hasData) {
     return renderNoData();
   }
 
+  const FilterButton = (
+    <EuiFlexItem grow={false} data-test-subj="sessionViewFilterButton">
+     <EuiButtonIcon
+       iconType="eye"
+       display={isFilterToggleOpen ? "base" : "empty"}
+       onClick={toggleFilterButton}
+       size="m"
+     />
+    </EuiFlexItem>
+  ) 
+
   return (
     <>
+    <EuiPanel color={"subdued"}>
       <EuiFlexGroup>
-        <EuiFlexItem data-test-subj="sessionViewProcessEventsSearch" css={{ position: 'relative' }}>
+        <EuiFlexItem data-test-subj="sessionViewProcessEventsSearch">
           <SessionViewSearchBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -180,11 +251,16 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             searchResults={searchResults}
           />
         </EuiFlexItem>
+
+      <EuiFlexItem grow={false} data-test-subj="sessionViewFilterButton">
+        {renderFilterToggleDropDown()}
+        
+      </EuiFlexItem>
+
         <EuiFlexItem grow={false}>
           <EuiButton
             onClick={toggleDetailPanel}
             iconType="list"
-            fill
             data-test-subj="sessionViewDetailPanelToggle"
           >
             <FormattedMessage
@@ -193,7 +269,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             />
           </EuiButton>
         </EuiFlexItem>
-      </EuiFlexGroup>
+        </EuiFlexGroup>
+      </EuiPanel>
       <EuiResizableContainer>
         {(EuiResizablePanel, EuiResizableButton, { togglePanel }) => (
           <>
@@ -204,7 +281,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
             >
               {renderProcessTree()}
             </EuiResizablePanel>
-
             {renderSessionViewDetailPanel(EuiResizableButton, EuiResizablePanel)}
           </>
         )}
