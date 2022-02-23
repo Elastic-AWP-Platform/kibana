@@ -14,7 +14,7 @@ export const useStyles = () => {
 
   const cached = useMemo(() => {
     const description: CSSObject = {
-      width: 'calc(100% - 28px)',
+      width: `calc(100% - ${euiTheme.size.xl})`,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
