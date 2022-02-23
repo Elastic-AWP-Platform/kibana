@@ -20,8 +20,17 @@ describe('detail panel process tab helpers tests', () => {
     expect(result).toEqual('echo exec, echo exit');
   });
 
-  it('getProcessExecutableCopyText returns empty string with an  invalid array of tuples', () => {
-    const result = getProcessExecutableCopyText([['echo', 'exec'], ['echo'], ['exit']]);
+  it('getProcessExecutableCopyText returns empty string with an invalid array of tuples', () => {
+    // when some sub arrays only have 1 item
+    let result = getProcessExecutableCopyText([['echo', 'exec'], ['echo']]);
+    expect(result).toEqual('');
+
+    // when some sub arrays have more than two item
+    result = getProcessExecutableCopyText([
+      ['echo', 'exec'],
+      ['echo', 'exec', 'random'],
+      ['echo', 'exit'],
+    ]);
     expect(result).toEqual('');
   });
 });
