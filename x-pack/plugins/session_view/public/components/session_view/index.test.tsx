@@ -81,9 +81,11 @@ describe('SessionView component', () => {
         render();
         await waitForApiCall();
 
-        expect(renderResult.getAllByTestId('processTreeNode')).toBeTruthy();
+        expect(renderResult.getAllByTestId('processTreeNode').length).toBe(1);
 
-        const selectionArea = renderResult.queryByTestId('processTreeSelectionArea');
+        const selectionArea = renderResult.queryByTestId('sessionView:processTreeSelectionArea');
+
+        expect(selectionArea).toBeTruthy();
 
         expect(selectionArea?.parentElement?.getAttribute('data-id')).toEqual('test-entity-id');
       });
