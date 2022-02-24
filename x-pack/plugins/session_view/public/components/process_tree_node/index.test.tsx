@@ -74,7 +74,7 @@ describe('ProcessTreeNode component', () => {
       expect(renderResult.queryByTestId('sessionView:processTreeNodeExitCode')).toBeTruthy();
     });
 
-    it('does not renders exit code if it does not exist', async () => {
+    it('does not render exit code if it does not exist', async () => {
       const processWithoutExitCode: typeof processMock = {
         ...processMock,
         hasExec: () => true,
