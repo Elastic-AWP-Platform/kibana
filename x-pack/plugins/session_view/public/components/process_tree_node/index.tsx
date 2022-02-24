@@ -18,7 +18,6 @@ import { Process } from '../../../common/types/process_tree';
 import { useStyles, ButtonType } from './styles';
 import { ProcessTreeAlerts } from '../process_tree_alerts';
 
-
 interface ProcessDeps {
   process: Process;
   isSessionLeader?: boolean;
@@ -232,6 +231,9 @@ export function ProcessTreeNode({
     } = process.getDetails().process;
 
     const timeStampsNormal = parseTimestamp(process.getDetails().process.start)
+
+    const fn = functionWrapper(formatDate)
+    const dateTest = new Date(process.getDetails().process.start).valueOf()
 
     if (hasExec) {
       return (
