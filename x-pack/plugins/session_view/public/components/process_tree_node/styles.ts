@@ -153,7 +153,8 @@ export const useStyles = ({ depth, hasAlerts }: StylesDeps) => {
 
     const timeStamp: CSSObject = {
       float: 'right',
-      position: 'relative'
+      position: 'relative',
+      paddingRight: '16px'
     }
 
     const userEnteredIcon: CSSObject = {

@@ -42,8 +42,9 @@ export class ProcessImpl implements Process {
     this.searchMatched = null;
   }
 
-  // hideSameGroup will filter out any processes which have the same pgid as this process
-  getChildren(hideSameGroup: boolean = false) {
+  // When verboseMode is false, we filter out processes that share the same pgid as their parent session leader.
+  // this option is driven by the "verbose mode" toggle in SessionView/index.tsx
+  getChildren(verboseMode: boolean = true) {
     let children = this.children;
 
     // if there are orphans, we just render them inline with the other child processes (currently only session leader does this)
@@ -51,14 +52,22 @@ export class ProcessImpl implements Process {
       children = [...children, ...this.orphans].sort(sortProcesses);
     }
 
-    if (hideSameGroup) {
+    if (!verboseMode) {
       const { pid } = this.getDetails().process;
 
       return children.filter((process) => {
-        const pgid = process.getDetails().process.group_leader.pid;
+        const {
+          group_leader: groupLeader,
+          session_leader: sessionLeader,
+          parent,
+        } = process.getDetails().process;
 
-        // TODO: needs update after field rename to match ECS
-        return pgid !== pid || process.searchMatched;
+        const isGroupLeader = groupLeader.pid === pid;
+        const parentIsASessionLeader = parent.pid === sessionLeader.pid;
+
+        // if the parent of this process is a session leader, and the process itself is not a group leader (belongs to the session leader process group), filter it out.
+        // unless of course it matched against a searchQuery
+        return (parentIsASessionLeader && !isGroupLeader) || process.searchMatched;
       });
     }
 

@@ -18,12 +18,14 @@ import { Process } from '../../../common/types/process_tree';
 import { useStyles, ButtonType } from './styles';
 import { ProcessTreeAlerts } from '../process_tree_alerts';
 
+
 interface ProcessDeps {
   process: Process;
   isSessionLeader?: boolean;
   depth?: number;
   onProcessSelected?: (process: Process) => void;
-  checkedFilterOptions?: Array<boolean>
+  timeStampOn?: boolean;
+  verboseModeOn?: boolean;
 }
 
 /**
@@ -35,24 +37,24 @@ export function ProcessTreeNode({
   isSessionLeader = false,
   depth = 0,
   onProcessSelected,
-  checkedFilterOptions = [true,true],
+  timeStampOn = true,
+  verboseModeOn = true
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
 
   const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
   const [alertsExpanded, setAlertsExpanded] = useState(false);
-  const [showGroupLeadersOnly, setShowGroupLeadersOnly] = useState(isSessionLeader);
   const { searchMatched } = process;
 
-  const parseTimestamp = (date:string) => {
+  const parseTimestamp = (date:string) => { //check if we have a kibana equivalent for this
     const timeStamp = new Date(date)
     const month = timeStamp.toLocaleString('default',{month:'long'})
     return month.substring(3,0) + " " + timeStamp.getDate() + ", " + timeStamp.getFullYear() + " @ " + timeStamp.getHours() + ":" + timeStamp.getMinutes() + ":" + timeStamp.getSeconds() + ":" + timeStamp.getMilliseconds()
   }
 
   useEffect(() => {
-    setChildrenExpanded(isSessionLeader || !process.autoExpand);
-  }, [isSessionLeader, process.autoExpand, checkedFilterOptions[1]]);
+    setChildrenExpanded(isSessionLeader || process.autoExpand);
+  }, [isSessionLeader, process.autoExpand]);
 
   const processDetails = useMemo(() => {
     return process.getDetails();
@@ -93,8 +95,8 @@ export function ProcessTreeNode({
 
   const { tty } = processDetails.process;
 
-  const renderChildren = (e:boolean) => {
-    const children = process.getChildren(e);
+  const renderChildren = () => {
+    const children = process.getChildren(verboseModeOn);
 
     if (!childrenExpanded || !children || children.length === 0) {
       return null;
@@ -111,7 +113,8 @@ export function ProcessTreeNode({
               process={child}
               depth={newDepth}
               onProcessSelected={onProcessSelected}
-              checkedFilterOptions={checkedFilterOptions}
+              timeStampOn= {timeStampOn}
+              verboseModeOn= {verboseModeOn}
             />
           );
         })}
@@ -126,11 +129,11 @@ export function ProcessTreeNode({
   const renderButtons = () => {
     const buttons = [];
     const childCount = process.getChildren().length;
-
+/*
     if (isSessionLeader) {
       const groupLeaderCount = process.getChildren(true).length;
       const sameGroupCount = childCount - groupLeaderCount;
-/*
+
       if (sameGroupCount > 0) {
         buttons.push(
           <EuiToolTip
@@ -161,18 +164,18 @@ export function ProcessTreeNode({
               <EuiIcon
                 css={styles.buttonArrow}
                 size="s"
-                type={getExpandedIcon(checkedFilterOptions[1])}
+                type={getExpandedIcon(showGroupLeadersOnly)}
               />
             </EuiButton>
           </EuiToolTip>
         );
       }
-  } */}else if (childCount > 0 && !isSessionLeader) {
+  } else */if (childCount > 0 && !isSessionLeader) {
       buttons.push(
         <EuiButton
           key="child-processes-button"
           css={styles.getButtonStyle(ButtonType.children)}
-          onClick={() => {setShowGroupLeadersOnly(!checkedFilterOptions[1]);setChildrenExpanded(!childrenExpanded)}}
+          onClick={() => {setChildrenExpanded(!childrenExpanded)}}
           data-test-subj="processTreeNodeChildProcessesButton"
         >
           <FormattedMessage
@@ -228,7 +231,7 @@ export function ProcessTreeNode({
       exit_code: exitCode,
     } = process.getDetails().process;
 
-    const timeStampsNormal = parseTimestamp(process.getDetails()["@timestamp"])
+    const timeStampsNormal = parseTimestamp(process.getDetails().process.start)
 
     if (hasExec) {
       return (
@@ -237,7 +240,7 @@ export function ProcessTreeNode({
           <span css={styles.darkText}>{args[0]}</span>&nbsp;
           {args.slice(1).join(' ')}
           {exitCode && <small> [exit_code: {exitCode}]</small>}
-          {checkedFilterOptions[0]?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
+          {timeStampOn?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
         </span>
       );
     } else {
@@ -245,7 +248,7 @@ export function ProcessTreeNode({
         <span ref={textRef}>
           <span css={styles.workingDir}>{workingDirectory}</span>&nbsp;
           <span css={styles.darkText}>{executable}</span>&nbsp;
-          {checkedFilterOptions[0]?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
+          {timeStampOn?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
         </span>
       );
     }
@@ -321,10 +324,9 @@ export function ProcessTreeNode({
         </div>
       </div>
       {alertsExpanded && <ProcessTreeAlerts alerts={alerts} />}
-      <div>{checkedFilterOptions[1] ? renderChildren(showGroupLeadersOnly) : renderChildren(!showGroupLeadersOnly)}</div>
+      <div>{renderChildren()}</div>
     </>
   );
 }
-
 
 

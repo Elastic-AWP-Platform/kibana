@@ -1,4 +1,3 @@
-
 /*
  * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
  * or more contributor license agreements. Licensed under the Elastic License
@@ -59,20 +58,12 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Process[] | null>(null);
 
-  const [isFilterToggleOpen, setFilterToggleOpen] = useState(false)
+  const [isOptionDropdownOpen, setOptionDropdownOpen] = useState(false)
 
   const kibana = useKibana<SessionViewDeps>();
   const { usageCollection } = kibana.services;
 
   const reportUiCounter = usageCollection?.reportUiCounter("HELLO WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
-
-  const getBoolean = (value:string) => {
-    if(value === "on"){
-      return true
-    }
-    else
-      return false
-  }
 
   const optionsList = [
     {
@@ -86,9 +77,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
       checked: 'on'
     }
 ]
-
-  const [options, setOptions] = useState(optionsList)
-  const checkedFilterOptions = options.map(a=>getBoolean(a.checked))
+  const [options, setOptions] = useState(optionsList) 
 
   const {
     data,
@@ -150,7 +139,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
             fetchNextPage={fetchNextPage}
             fetchPreviousPage={fetchPreviousPage}
             setSearchResults={setSearchResults}
-            checkedFilterOptions={checkedFilterOptions}
+            timeStampOn={options[0].checked === 'on'}
+            verboseModeOn={options[1].checked === 'on'}
           />
         </div>
       );
@@ -184,17 +174,17 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
     return <></>;
   };
 
-  const renderFilterToggleDropDown = () => {
+  const renderOptionToggleDropDown = () => {
     return(
       <>
         <EuiPopover
-          button={FilterButton}
-          isOpen={isFilterToggleOpen}
-          closePopover={closeFilterButton}
+          button={OptionButton}
+          isOpen={isOptionDropdownOpen}
+          closePopover={closeOptionButton}
         >
           <EuiSelectable 
             options={options}
-            onChange={newOptions => handleFilterChange(newOptions)}>
+            onChange={newOptions => handleOptionChange(newOptions)}>
             {(list) => (
               <div style={{width:240}}>
               <EuiPopoverTitle>Display options</EuiPopoverTitle>
@@ -207,8 +197,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
     )
   }
 
-  const handleFilterChange = (value) =>{
-    setOptions(value)
+  const handleOptionChange = (value) =>{
+    setOptions(value) 
   }
 
   const toggleDetailPanel = () => {
@@ -216,24 +206,24 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
     reportUiCounter;
   };
 
-  const toggleFilterButton =() => {
-    setFilterToggleOpen(!isFilterToggleOpen)
+  const toggleOptionButton =() => {
+    setOptionDropdownOpen(!isOptionDropdownOpen)
   }
 
-  const closeFilterButton =() =>{
-    setFilterToggleOpen(false)
+  const closeOptionButton =() =>{
+    setOptionDropdownOpen(false)
   }
 
   if (!isFetching && !hasData) {
     return renderNoData();
   }
 
-  const FilterButton = (
-    <EuiFlexItem grow={false} data-test-subj="sessionViewFilterButton">
+  const OptionButton = (
+    <EuiFlexItem grow={false} data-test-subj="sessionViewOptionButton">
      <EuiButtonIcon
        iconType="eye"
-       display={isFilterToggleOpen ? "base" : "empty"}
-       onClick={toggleFilterButton}
+       display={isOptionDropdownOpen ? "base" : "empty"}
+       onClick={toggleOptionButton}
        size="m"
      />
     </EuiFlexItem>
@@ -252,9 +242,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
           />
         </EuiFlexItem>
 
-      <EuiFlexItem grow={false} data-test-subj="sessionViewFilterButton">
-        {renderFilterToggleDropDown()}
-        
+      <EuiFlexItem grow={false} data-test-subj="sessionViewOptionButton">
+        {renderOptionToggleDropDown()}
       </EuiFlexItem>
 
         <EuiFlexItem grow={false}>
@@ -288,6 +277,5 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
     </>
   );
 };
-
 // eslint-disable-next-line import/no-default-export
 export { SessionView as default };
