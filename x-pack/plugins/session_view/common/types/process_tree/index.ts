@@ -17,13 +17,6 @@ export const enum EventAction {
   output = 'output',
 }
 
-export interface EventActionPartition {
-  fork: ProcessEvent[];
-  exec: ProcessEvent[];
-  end: ProcessEvent[];
-  output: ProcessEvent[];
-}
-
 export interface User {
   id: string;
   name: string;

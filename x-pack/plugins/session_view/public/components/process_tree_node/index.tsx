@@ -75,7 +75,7 @@ export function ProcessTreeNode({
   const { tty } = processDetails.process;
 
   const renderChildren = () => {
-    const children = process.getChildren(showGroupLeadersOnly);
+    const children = process.getChildren(!showGroupLeadersOnly);
 
     if (!childrenExpanded || !children || children.length === 0) {
       return null;
