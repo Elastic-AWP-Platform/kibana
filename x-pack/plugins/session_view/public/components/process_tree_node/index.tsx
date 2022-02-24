@@ -107,10 +107,10 @@ export function ProcessTreeNode({
 
   const renderButtons = () => {
     const buttons = [];
-    const childCount = process.getChildren().length;
+    const childCount = process.getChildren(true).length;
 
     if (isSessionLeader) {
-      const groupLeaderCount = process.getChildren(true).length;
+      const groupLeaderCount = process.getChildren(false).length;
       const sameGroupCount = childCount - groupLeaderCount;
 
       if (sameGroupCount > 0) {

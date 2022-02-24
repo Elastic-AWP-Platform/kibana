@@ -83,7 +83,7 @@ describe('SessionView component', () => {
 
         expect(renderResult.getAllByTestId('processTreeNode')).toBeTruthy();
 
-        const selectionArea = renderResult.queryByTestId('processTreeSelectionArea');
+        const selectionArea = renderResult.queryByTestId('sessionView:processTreeSelectionArea');
 
         expect(selectionArea?.parentElement?.getAttribute('data-id')).toEqual('test-entity-id');
       });

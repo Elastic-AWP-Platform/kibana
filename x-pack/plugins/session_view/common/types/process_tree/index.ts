@@ -155,7 +155,7 @@ export interface Process {
   getDetails(): ProcessEvent;
   isUserEntered(): boolean;
   getMaxAlertLevel(): number | null;
-  getChildren(hideSameGroup?: boolean): Process[];
+  getChildren(verboseMode: boolean): Process[];
 }
 
 export type ProcessMap = {
