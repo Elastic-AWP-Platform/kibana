@@ -11,7 +11,7 @@
  *2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useMemo, useRef, useLayoutEffect, useState, useEffect, MouseEvent } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect, MouseEvent } from 'react';
 import { EuiButton, EuiIcon, EuiToolTip } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
@@ -55,20 +55,9 @@ export function ProcessTreeNode({
     setChildrenExpanded(isSessionLeader || process.autoExpand);
   }, [isSessionLeader, process.autoExpand]);
 
-  const processDetails = useMemo(() => {
-    return process.getDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
-
-  const hasExec = useMemo(() => {
-    return process.hasExec();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
-
-  const alerts = useMemo(() => {
-    return process.getAlerts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [process.events.length]);
+  const processDetails = process.getDetails();
+  const hasExec = process.hasExec();
+  const alerts = process.getAlerts();
 
   const styles = useStyles({ depth, hasAlerts: !!alerts.length });
 
@@ -79,7 +68,7 @@ export function ProcessTreeNode({
 
       if (text) {
         const html = text.replace(regex, (match) => {
-          return `<span data-test-subj="processNodeSearchHighlight" style="${styles.searchHighlight}">${match}</span>`;
+          return `<span data-test-subj="sessionView:processNodeSearchHighlight" style="${styles.searchHighlight}">${match}</span>`;
         });
 
         // eslint-disable-next-line no-unsanitized/property
@@ -95,6 +84,7 @@ export function ProcessTreeNode({
   const { tty } = processDetails.process;
 
   const renderChildren = () => {
+
     const children = process.getChildren(verboseModeOn);
 
     if (!childrenExpanded || !children || children.length === 0) {
@@ -125,57 +115,21 @@ export function ProcessTreeNode({
     return expanded ? 'arrowUp' : 'arrowDown';
   };
 
+  //const onShowGroupLeaderOnlyClick = () => setShowGroupLeadersOnly(!showGroupLeadersOnly);
+
   const renderButtons = () => {
     const buttons = [];
-    const childCount = process.getChildren().length;
-/*
-    if (isSessionLeader) {
-      const groupLeaderCount = process.getChildren(true).length;
-      const sameGroupCount = childCount - groupLeaderCount;
 
-      if (sameGroupCount > 0) {
-        buttons.push(
-          <EuiToolTip
-            key="samePgidTooltip"
-            position="top"
-            content={
-              <p>
-                <FormattedMessage
-                  id="xpack.sessionView.groupLeaderTooltip"
-                  defaultMessage="Hide or show other processes in the same 'process group' (pgid) as the session leader. This typically includes forks from bash builtins, auto completions and other shell startup activity."
-                />
-              </p>
-            }
-          >
-            <EuiButton
-              key="child-processes-button"
-              css={styles.getButtonStyle(ButtonType.children)}
-              onClick={() => setShowGroupLeadersOnly(!showGroupLeadersOnly)}
-              data-test-subj="processTreeNodeChildProcessesButton"
-            >
-              <FormattedMessage
-                id="xpack.sessionView.plusCountMore"
-                defaultMessage="+{count} more"
-                values={{
-                  count: sameGroupCount,
-                }}
-              />
-              <EuiIcon
-                css={styles.buttonArrow}
-                size="s"
-                type={getExpandedIcon(showGroupLeadersOnly)}
-              />
-            </EuiButton>
-          </EuiToolTip>
-        );
-      }
-  } else */if (childCount > 0 && !isSessionLeader) {
+    const childCount = process.getChildren(true).length;
+    if (childCount > 0 && !isSessionLeader) {
       buttons.push(
         <EuiButton
           key="child-processes-button"
           css={styles.getButtonStyle(ButtonType.children)}
-          onClick={() => {setChildrenExpanded(!childrenExpanded)}}
-          data-test-subj="processTreeNodeChildProcessesButton"
+
+          onClick={() => setChildrenExpanded(!childrenExpanded)}
+          data-test-subj="sessionView:processTreeNodeChildProcessesButton"
+
         >
           <FormattedMessage
             id="xpack.sessionView.childProcesses"
@@ -232,9 +186,6 @@ export function ProcessTreeNode({
 
     const timeStampsNormal = parseTimestamp(process.getDetails().process.start)
 
-    const fn = functionWrapper(formatDate)
-    const dateTest = new Date(process.getDetails().process.start).valueOf()
-
     if (hasExec) {
       return (
         <span ref={textRef}>
@@ -261,13 +212,13 @@ export function ProcessTreeNode({
       <span>
         {process.isUserEntered() && (
           <EuiIcon
-            data-test-subj="processTreeNodeUserIcon"
+            data-test-subj="sessionView:processTreeNodeUserIcon"
             css={styles.userEnteredIcon}
             type="user"
           />
         )}
         {hasExec ? (
-          <EuiIcon data-test-subj="processTreeNodeExecIcon" type="console" />
+          <EuiIcon data-test-subj="sessionView:processTreeNodeExecIcon" type="console" />
         ) : (
           <EuiIcon type="branch" />
         )}
@@ -283,7 +234,7 @@ export function ProcessTreeNode({
     if (user.name === 'root' && user.id !== parent.user.id) {
       return (
         <EuiButton
-          data-test-subj="processTreeNodeRootEscalationFlag"
+          data-test-subj="sessionView:processTreeNodeRootEscalationFlag"
           css={styles.getButtonStyle(ButtonType.userChanged)}
         >
           <FormattedMessage
@@ -316,10 +267,14 @@ export function ProcessTreeNode({
         data-id={id}
         key={id + searchMatched}
         css={styles.processNode}
-        data-test-subj="processTreeNode"
+        data-test-subj="sessionView:processTreeNode"
       >
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-        <div data-test-subj="processTreeNodeRow" css={styles.wrapper} onClick={onProcessClicked}>
+        <div
+          data-test-subj="sessionView:processTreeNodeRow"
+          css={styles.wrapper}
+          onClick={onProcessClicked}
+        >
           {isSessionLeader ? renderSessionLeader() : renderProcess()}
           {renderRootEscalation()}
           {renderButtons()}

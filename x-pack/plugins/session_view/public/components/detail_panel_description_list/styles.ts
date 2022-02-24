@@ -7,17 +7,34 @@
 
 import { useMemo } from 'react';
 import { CSSObject } from '@emotion/react';
+import { useEuiTheme } from '@elastic/eui';
 
 export const useStyles = () => {
+  const { euiTheme } = useEuiTheme();
+
   const cached = useMemo(() => {
     const descriptionList: CSSObject = {
-      padding: '8px',
+      padding: euiTheme.size.s,
+    };
+
+    const tabListTitle = {
+      width: '40%',
+      display: 'flex',
+      alignItems: 'center',
+    };
+
+    const tabListDescription = {
+      width: '60%',
+      display: 'flex',
+      alignItems: 'center',
     };
 
     return {
       descriptionList,
+      tabListTitle,
+      tabListDescription,
     };
-  }, []);
+  }, [euiTheme]);
 
   return cached;
 };

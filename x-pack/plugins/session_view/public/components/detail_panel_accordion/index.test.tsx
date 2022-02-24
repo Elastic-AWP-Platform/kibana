@@ -34,7 +34,7 @@ describe('DetailPanelAccordion component', () => {
         <DetailPanelAccordion id={TEST_ID} listItems={TEST_LIST_ITEM} title={TEST_TITLE} />
       );
 
-      expect(renderResult.queryByTestId('sessionViewer:detail-panel-accordion')).toBeVisible();
+      expect(renderResult.queryByTestId('sessionView:detail-panel-accordion')).toBeVisible();
     });
 
     it('should render acoordion with tooltip', async () => {
@@ -47,8 +47,10 @@ describe('DetailPanelAccordion component', () => {
         />
       );
 
-      expect(renderResult.queryByTestId('sessionViewer:detail-panel-accordion')).toBeVisible();
-      expect(renderResult.queryByTestId('sessionViewer:detail-panel-accordion-tooltip')).toBeVisible();
+      expect(renderResult.queryByTestId('sessionView:detail-panel-accordion')).toBeVisible();
+      expect(
+        renderResult.queryByTestId('sessionView:detail-panel-accordion-tooltip')
+      ).toBeVisible();
     });
 
     it('should render acoordion with extra action', async () => {
@@ -63,8 +65,10 @@ describe('DetailPanelAccordion component', () => {
         />
       );
 
-      expect(renderResult.queryByTestId('sessionViewer:detail-panel-accordion')).toBeVisible();
-      const extraActionButton = renderResult.getByTestId('sessionViewer:detail-panel-accordion-action');
+      expect(renderResult.queryByTestId('sessionView:detail-panel-accordion')).toBeVisible();
+      const extraActionButton = renderResult.getByTestId(
+        'sessionView:detail-panel-accordion-action'
+      );
       expect(extraActionButton).toHaveTextContent(ACTION_TEXT);
       extraActionButton.click();
       expect(mockFn).toHaveBeenCalledTimes(1);

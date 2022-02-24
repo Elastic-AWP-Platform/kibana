@@ -15,13 +15,6 @@ interface DetailPanelDescriptionListDeps {
   }>;
 }
 
-const TAB_LIST_TITLE_STYLE = {
-  style: { width: '40%', display: 'flex', alignItems: 'center' },
-};
-const TAB_LIST_DESCRIPTION_STYLE = {
-  style: { width: '60%', display: 'flex', alignItems: 'center' },
-};
-
 /**
  * Description list in session view detail panel.
  */
@@ -32,9 +25,9 @@ export const DetailPanelDescriptionList = ({ listItems }: DetailPanelDescription
       type="column"
       listItems={listItems}
       css={styles.descriptionList}
-      titleProps={TAB_LIST_TITLE_STYLE}
-      descriptionProps={TAB_LIST_DESCRIPTION_STYLE}
-      data-test-subj="sessionViewer:detail-panel-description-list"
+      titleProps={{ style: styles.tabListTitle }}
+      descriptionProps={{ style: styles.tabListDescription }}
+      data-test-subj="sessionView:detail-panel-description-list"
     />
   );
 };

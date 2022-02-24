@@ -5,11 +5,11 @@
  * 2.0.
  */
 import _ from 'lodash';
+import memoizeOne from 'memoize-one';
 import { useState, useEffect } from 'react';
 import {
   EventAction,
   EventKind,
-  EventActionPartition,
   Process,
   ProcessEvent,
   ProcessMap,
@@ -42,32 +42,52 @@ export class ProcessImpl implements Process {
     this.searchMatched = null;
   }
 
-  // When verboseMode is false, we filter out processes that share the same pgid as their parent session leader.
-  // this option is driven by the "verbose mode" toggle in SessionView/index.tsx
-  getChildren(verboseMode: boolean = true) {
+
+  addEvent(event: ProcessEvent) {
+    // rather than push new events on the array, we return a new one
+    // this helps the below memoizeOne functions to behave correctly.
+    this.events = this.events.concat(event);
+  }
+
+  clearSearch() {
+    this.searchMatched = null;
+    this.autoExpand = false;
+  }
+
+  getChildren(verboseMode: boolean) {
+
     let children = this.children;
 
     // if there are orphans, we just render them inline with the other child processes (currently only session leader does this)
     if (this.orphans.length) {
       children = [...children, ...this.orphans].sort(sortProcesses);
     }
-
+    // When verboseMode is false, we filter out noise via a few techniques.
+    // This option is driven by the "verbose mode" toggle in SessionView/index.tsx
     if (!verboseMode) {
-      const { pid } = this.getDetails().process;
+      return children.filter((child) => {
+        const { group_leader: groupLeader, session_leader: sessionLeader } =
+          child.getDetails().process;
 
-      return children.filter((process) => {
-        const {
-          group_leader: groupLeader,
-          session_leader: sessionLeader,
-          parent,
-        } = process.getDetails().process;
+        // search matches will never be filtered out
+        if (child.searchMatched) {
+          return true;
+        }
 
-        const isGroupLeader = groupLeader.pid === pid;
-        const parentIsASessionLeader = parent.pid === sessionLeader.pid;
+        // Hide processes that have their session leader as their process group leader.
+        // This accounts for a lot of noise from bash and other shells forking, running auto completion processes and
+        // other shell startup activities (e.g bashrc .profile etc)
+        if (groupLeader.pid === sessionLeader.pid) {
+          return false;
+        }
 
-        // if the parent of this process is a session leader, and the process itself is not a group leader (belongs to the session leader process group), filter it out.
-        // unless of course it matched against a searchQuery
-        return (parentIsASessionLeader && !isGroupLeader) || process.searchMatched;
+        // If the process has no children and has not exec'd (fork only), we hide it.
+        if (child.children.length === 0 && !child.hasExec()) {
+          return false;
+        }
+
+        return true;
+
       });
     }
 
@@ -75,70 +95,93 @@ export class ProcessImpl implements Process {
   }
 
   hasOutput() {
-    // TODO: schema undecided
-    return !!this.events.find(({ event }) => event.action === EventAction.output);
+    return !!this.findEventByAction(this.events, EventAction.output);
   }
 
   hasAlerts() {
-    return !!this.events.find(({ event }) => event.kind === EventKind.signal);
+    return !!this.findEventByKind(this.events, EventKind.signal);
   }
 
   getAlerts() {
-    return this.events.filter(({ event }) => event.kind === EventKind.signal);
+    return this.filterEventsByKind(this.events, EventKind.signal);
   }
 
   hasExec() {
-    return !!this.events.find(({ event }) => event.action === EventAction.exec);
+    return !!this.findEventByAction(this.events, EventAction.exec);
   }
 
   hasExited() {
-    return !!this.events.find(({ event }) => event.action === EventAction.end);
+    return !!this.findEventByAction(this.events, EventAction.end);
   }
 
   getDetails() {
-    const eventsPartition = this.events.reduce(
-      (currEventsParition, processEvent) => {
-        currEventsParition[processEvent.event.action]?.push(processEvent);
-        return currEventsParition;
-      },
-      Object.values(EventAction).reduce((currActions, action) => {
-        currActions[action] = [] as ProcessEvent[];
-        return currActions;
-      }, {} as EventActionPartition)
-    );
-
-    if (eventsPartition.exec.length) {
-      return eventsPartition.exec[eventsPartition.exec.length - 1];
-    }
-
-    if (eventsPartition.fork.length) {
-      return eventsPartition.fork[eventsPartition.fork.length - 1];
-    }
-
-    return this.events[this.events.length - 1] || ({} as ProcessEvent);
+    return this.getDetailsMemo(this.events);
   }
 
   getOutput() {
-    return this.events.reduce((output, event) => {
-      if (event.event.action === EventAction.output) {
-        output += ''; // TODO: schema unknown
-      }
-
-      return output;
-    }, '');
+    // not implemented, output ECS schema not defined (for a future release)
+    return '';
   }
 
+  // isUserEntered is a best guess at which processes were initiated by a real person
+  // In most situations a user entered command in a shell such as bash, will cause bash
+  // to fork, create a new process group, and exec the command (e.g ls). If the session
+  // has a controlling tty (aka an interactive session), we assume process group leaders
+  // with a session leader for a parent are "user entered".
+  // Because of the presence of false positives in this calculation, it is currently
+  // only used to auto expand parts of the tree that could be of interest.
   isUserEntered() {
     const event = this.getDetails();
-    const { tty } = event.process;
+    const {
+      pid,
+      tty,
+      parent,
+      session_leader: sessionLeader,
+      group_leader: groupLeader,
+    } = event.process;
 
-    return !!tty && process.pid !== event.process.group_leader.pid;
+    const parentIsASessionLeader = parent.pid === sessionLeader.pid; // possibly bash, zsh or some other shell
+    const processIsAGroupLeader = pid === groupLeader.pid;
+    const sessionIsInteractive = !!tty;
+
+    return sessionIsInteractive && parentIsASessionLeader && processIsAGroupLeader;
   }
 
   getMaxAlertLevel() {
-    // TODO:
+    // TODO: as part of alerts details work + tie in with the new alert flyout
     return null;
   }
+
+  findEventByAction = memoizeOne((events: ProcessEvent[], action: EventAction) => {
+    return events.find(({ event }) => event.action === action);
+  });
+
+  findEventByKind = memoizeOne((events: ProcessEvent[], kind: EventKind) => {
+    return events.find(({ event }) => event.kind === kind);
+  });
+
+  filterEventsByAction = memoizeOne((events: ProcessEvent[], action: EventAction) => {
+    return events.filter(({ event }) => event.action === action);
+  });
+
+  filterEventsByKind = memoizeOne((events: ProcessEvent[], kind: EventKind) => {
+    return events.filter(({ event }) => event.kind === kind);
+  });
+
+  // returns the most recent fork, exec, or end event
+  // to be used as a source for the most up to date details
+  // on the processes lifecycle.
+  getDetailsMemo = memoizeOne((events: ProcessEvent[]) => {
+    const actionsToFind = [EventAction.fork, EventAction.exec, EventAction.end];
+    const filtered = events.filter((processEvent) => {
+      return actionsToFind.includes(processEvent.event.action);
+    });
+
+    // because events is already ordered by @timestamp we take the last event
+    // which could be a fork (w no exec or exit), most recent exec event (there can be multiple), or end event.
+    // If a process has an 'end' event will always be returned (since it is last and includes details like exit_code and end time)
+    return filtered[filtered.length - 1] || ({} as ProcessEvent);
+  });
 }
 
 export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProcessTreeDeps) => {
@@ -195,6 +238,10 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
     setProcessMap({ ...eventsProcessMap });
     setProcessedPages([...processedPages, ...newProcessedPages]);
     setOrphans(newOrphans);
+
+    // we disable this eslint rule since this hook will mutate orphans, processMap and processedPages
+    // by including those in the dependency array we create an infinite useEffect loop.
+    // the only time this useEffect should run is if data changes and there are new pages of events to process.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 

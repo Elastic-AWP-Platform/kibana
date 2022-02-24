@@ -93,8 +93,16 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   const renderNoData = () => {
     return (
       <EuiEmptyPrompt
-        data-test-subj="sessionViewProcessEventsEmpty"
-        title={<h2>No data to render</h2>}
+
+        data-test-subj="sessionView:sessionViewProcessEventsEmpty"
+        title={
+          <h2>
+            <FormattedMessage
+              id="xpack.sessionView.emptyDataMessage"
+              defaultMessage="No data to render"
+            />
+          </h2>
+        }
         body={<p>No process events found for this query.</p>}
       />
     );
@@ -233,7 +241,10 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
     <>
     <EuiPanel color={"subdued"}>
       <EuiFlexGroup>
-        <EuiFlexItem data-test-subj="sessionViewProcessEventsSearch">
+        <EuiFlexItem
+          data-test-subj="sessionView:sessionViewProcessEventsSearch"
+          css={{ position: 'relative' }}
+        >
           <SessionViewSearchBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}

@@ -18,7 +18,7 @@ export const useFetchSessionViewProcessEvents = (
 ) => {
   const { http } = useKibana<CoreStart>().services;
 
-  const jumpToCursor = jumpToEvent && jumpToEvent['@timestamp'].toISOString();
+  const jumpToCursor = jumpToEvent && jumpToEvent['@timestamp'];
 
   const query = useInfiniteQuery(
     'sessionViewProcessEvents',
@@ -69,8 +69,7 @@ export const useFetchSessionViewProcessEvents = (
     if (jumpToEvent && query.data?.pages.length === 1) {
       query.fetchPreviousPage();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query.data]);
+  }, [jumpToEvent, query]);
 
   return query;
 };
