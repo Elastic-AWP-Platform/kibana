@@ -196,6 +196,7 @@ export const useProcessTree = ({ sessionEntityId, data, searchQuery }: UseProces
     fakeLeaderEvent.process = {
       ...fakeLeaderEvent.process,
       ...fakeLeaderEvent.process.entry_leader,
+      parent: fakeLeaderEvent.process.parent,
     };
     sessionLeaderProcess.events.push(fakeLeaderEvent);
   }
