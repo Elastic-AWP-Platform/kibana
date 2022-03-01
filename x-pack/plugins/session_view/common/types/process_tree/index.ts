@@ -5,23 +5,16 @@
  * 2.0.
  */
 
-export enum EventKind {
+export const enum EventKind {
   event = 'event',
   signal = 'signal',
 }
 
-export enum EventAction {
+export const enum EventAction {
   fork = 'fork',
   exec = 'exec',
   end = 'end',
   output = 'output',
-}
-
-export interface EventActionPartition {
-  fork: ProcessEvent[];
-  exec: ProcessEvent[];
-  end: ProcessEvent[];
-  output: ProcessEvent[];
 }
 
 export interface User {
@@ -79,9 +72,6 @@ export interface ProcessFields {
 export interface ProcessSelf extends Omit<ProcessFields, 'user'> {
   parent: ProcessFields;
   session_leader: ProcessFields;
-  // replacing session_leader with session as a Temporary implementation for the endpoint integration
-  // TODO: revert to session_leader once it's ready
-  session: ProcessFields;
   entry_leader: ProcessFields;
   group_leader: ProcessFields;
 }
@@ -155,6 +145,8 @@ export interface Process {
   parent: Process | undefined;
   autoExpand: boolean;
   searchMatched: string | null; // either false, or set to searchQuery
+  addEvent(event: ProcessEvent): void;
+  clearSearch(): void;
   hasOutput(): boolean;
   hasAlerts(): boolean;
   getAlerts(): ProcessEvent[];
@@ -163,7 +155,7 @@ export interface Process {
   getDetails(): ProcessEvent;
   isUserEntered(): boolean;
   getMaxAlertLevel(): number | null;
-  getChildren(hideSameGroup?: boolean): Process[];
+  getChildren(verboseMode: boolean): Process[];
 }
 
 export type ProcessMap = {
