@@ -4,7 +4,7 @@
  * 2.0; you may not use this file except in compliance with the Elastic License
  * 2.0.
  */
-import React, { useState, ComponentType, useEffect } from 'react';
+import React, { useState, ComponentType } from 'react';
 import {
   EuiEmptyPrompt,
   EuiButton,
@@ -31,7 +31,7 @@ import { METRIC_TYPE } from '@kbn/analytics';
 import { IDataPluginServices } from '../../../../../../src/plugins/data/public';
 import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
 import { UsageCollectionSetup } from 'src/plugins/usage_collection/target/types/public/plugin';
-
+//import { UsageCollectionSetup } from '../../../../../../src/plugins/usage_collection/public';
 
 interface SessionViewDeps {
   // the root node of the process tree to render. e.g process.entry.entity_id or process.session_leader.entity_id
@@ -63,7 +63,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   const kibana = useKibana<SessionViewDeps>();
   const { usageCollection } = kibana.services;
 
-  const reportUiCounter = usageCollection?.reportUiCounter("HELLO WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
+  const reportUiCounter = usageCollection?.reportUiCounter("HELLO_WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
 
   const optionsList = [
     {
@@ -204,22 +204,29 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
       </>
     )
   }
+  reportUiCounter;
+  reportUiCounter;
+  reportUiCounter;
 
   const handleOptionChange = (value) =>{
-    setOptions(value) 
+    setOptions(value);
+    reportUiCounter
   }
 
   const toggleDetailPanel = () => {
     setIsDetailOpen(!isDetailOpen);
-    reportUiCounter;
+    reportUiCounter
   };
 
   const toggleOptionButton =() => {
     setOptionDropdownOpen(!isOptionDropdownOpen)
+    reportUiCounter;
+    
   }
 
   const closeOptionButton =() =>{
     setOptionDropdownOpen(false)
+    reportUiCounter;
   }
 
   if (!isFetching && !hasData) {
@@ -243,7 +250,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
       <EuiFlexGroup>
         <EuiFlexItem
           data-test-subj="sessionView:sessionViewProcessEventsSearch"
-          css={{ position: 'relative' }}
+          css={styles.searchBar}
         >
           <SessionViewSearchBar
             searchQuery={searchQuery}
@@ -253,11 +260,11 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
           />
         </EuiFlexItem>
 
-      <EuiFlexItem grow={false} data-test-subj="sessionViewOptionButton">
+      <EuiFlexItem grow={false} data-test-subj="sessionViewOptionButton" css={styles.buttonsEyeDetail}>
         {renderOptionToggleDropDown()}
       </EuiFlexItem>
 
-        <EuiFlexItem grow={false}>
+        <EuiFlexItem grow={false} css={styles.buttonsEyeDetail}>
           <EuiButton
             onClick={toggleDetailPanel}
             iconType="list"

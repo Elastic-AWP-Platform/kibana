@@ -26,9 +26,22 @@ export const useStyles = ({ height = 500 }: StylesDeps) => {
       height: `${height}px`,
     };
 
+    const searchBar: CSSObject = {
+      position: 'relative',
+      marginLeft: '4px !important', 
+      marginRight: '4px !important',
+    };
+
+    const buttonsEyeDetail: CSSObject = {
+      marginLeft: '4px !important', 
+      marginRight: '4px !important'
+    };
+
     return {
       processTree,
       detailPanel,
+      searchBar,
+      buttonsEyeDetail
     };
   }, [height, euiTheme]);
 
