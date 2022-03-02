@@ -17,6 +17,7 @@ import { FormattedMessage } from '@kbn/i18n-react';
 import { Process } from '../../../common/types/process_tree';
 import { useStyles, ButtonType } from './styles';
 import { ProcessTreeAlerts } from '../process_tree_alerts';
+import moment from 'moment';
 
 interface ProcessDeps {
   process: Process;
@@ -44,12 +45,6 @@ export function ProcessTreeNode({
   const [childrenExpanded, setChildrenExpanded] = useState(isSessionLeader || process.autoExpand);
   const [alertsExpanded, setAlertsExpanded] = useState(false);
   const { searchMatched } = process;
-
-  const parseTimestamp = (date:string) => { //check if we have a kibana equivalent for this
-    const timeStamp = new Date(date)
-    const month = timeStamp.toLocaleString('default',{month:'long'})
-    return month.substring(3,0) + " " + timeStamp.getDate() + ", " + timeStamp.getFullYear() + " @ " + timeStamp.getHours() + ":" + timeStamp.getMinutes() + ":" + timeStamp.getSeconds() + ":" + timeStamp.getMilliseconds()
-  }
 
   useEffect(() => {
     setChildrenExpanded(isSessionLeader || process.autoExpand);
@@ -184,7 +179,7 @@ export function ProcessTreeNode({
       exit_code: exitCode,
     } = process.getDetails().process;
 
-    const timeStampsNormal = parseTimestamp(process.getDetails().process.start)
+    const timeStampsNormal = moment(process.getDetails().process.start).format('MMM DD, YYYY @ hh:mm:ss.SSS') //Feb 28, 2022 @ 22:37:30:520 
 
     if (hasExec) {
       return (
@@ -192,7 +187,12 @@ export function ProcessTreeNode({
           <span css={styles.workingDir}>{workingDirectory}</span>&nbsp;
           <span css={styles.darkText}>{args[0]}</span>&nbsp;
           {args.slice(1).join(' ')}
-          {exitCode && <small> [exit_code: {exitCode}]</small>}
+          {exitCode !== undefined && (
+            <small data-test-subj="sessionView:processTreeNodeExitCode">
+              {' '}
+              [exit_code: {exitCode}]
+            </small>
+          )}
           {timeStampOn?<span css={styles.timeStamp}>{timeStampsNormal}</span>:null}&nbsp;
         </span>
       );

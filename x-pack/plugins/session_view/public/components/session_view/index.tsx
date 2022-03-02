@@ -41,6 +41,12 @@ interface SessionViewDeps {
   usageCollection?: UsageCollectionSetup
 }
 
+interface optionsField {
+  label:string;
+  value:string; 
+  checked:"on" | "off" | undefined;
+}
+
 /**
  * The main wrapper component for the session view.
  */
@@ -65,7 +71,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
 
   const reportUiCounter = usageCollection?.reportUiCounter("HELLO_WORLD", METRIC_TYPE.CLICK, 'TEST_PSY');
 
-  const optionsList = [
+  const optionsList: optionsField[]  = [
     {
       label: 'Timestamp',
       value: 'Timestamp',
@@ -93,7 +99,6 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   const renderNoData = () => {
     return (
       <EuiEmptyPrompt
-
         data-test-subj="sessionView:sessionViewProcessEventsEmpty"
         title={
           <h2>
@@ -204,11 +209,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
       </>
     )
   }
-  reportUiCounter;
-  reportUiCounter;
-  reportUiCounter;
 
-  const handleOptionChange = (value) =>{
+  const handleOptionChange = (value:optionsField[]) =>{
     setOptions(value);
     reportUiCounter
   }
@@ -234,7 +236,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
   }
 
   const OptionButton = (
-    <EuiFlexItem grow={false} data-test-subj="sessionViewOptionButton">
+    <EuiFlexItem grow={false}>
      <EuiButtonIcon
        iconType="eye"
        display={isOptionDropdownOpen ? "base" : "empty"}

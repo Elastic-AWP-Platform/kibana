@@ -28,13 +28,13 @@ export const useStyles = ({ height = 500 }: StylesDeps) => {
 
     const searchBar: CSSObject = {
       position: 'relative',
-      marginLeft: '4px !important', 
-      marginRight: '4px !important',
+      marginLeft: `${euiTheme.size.xs} !important`, // 
+      marginRight: `${euiTheme.size.xs} !important`,
     };
 
     const buttonsEyeDetail: CSSObject = {
-      marginLeft: '4px !important', 
-      marginRight: '4px !important'
+      marginLeft: `${euiTheme.size.xs} !important`, 
+      marginRight: `${euiTheme.size.xs} !important`
     };
 
     return {
