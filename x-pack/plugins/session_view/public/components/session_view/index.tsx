@@ -190,7 +190,9 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent }: SessionVie
                 </EuiResizablePanel>
               </>
             ) : (
-              <>{/* Returning an empty element here (instead of false) to avoid a bug in EuiResizableContainer */}</>
+              <>
+                {/* Returning an empty element here (instead of false) to avoid a bug in EuiResizableContainer */}
+              </>
             )}
           </>
         )}
