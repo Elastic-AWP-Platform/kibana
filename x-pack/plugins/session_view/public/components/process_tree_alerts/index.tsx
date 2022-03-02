@@ -36,7 +36,7 @@ export function ProcessTreeAlerts({ alerts }: ProcessTreeAlertsDeps) {
     return http.basePath.prepend(`/app/security/rules/id/${alert.kibana?.alert.rule.uuid}`);
   };
 
-  const renderAlertDetails = (alert: ProcessEvent, index: number) => {
+  const renderedAlerts = alerts.map((alert: ProcessEvent, index: number) => {
     if (!alert.kibana) {
       return null;
     }
@@ -95,11 +95,11 @@ export function ProcessTreeAlerts({ alerts }: ProcessTreeAlertsDeps) {
         )}
       </EuiText>
     );
-  };
+  });
 
   return (
     <div css={styles.container} data-test-subj="sessionView:sessionViewAlertDetails">
-      {alerts.map(renderAlertDetails)}
+      {renderedAlerts}
     </div>
   );
 }
