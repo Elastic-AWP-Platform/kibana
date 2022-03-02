@@ -171,7 +171,7 @@ export const ProcessTree = ({
       />
       {hasNextPage && (
         <EuiButton fullWidth onClick={fetchNextPage} isLoading={isFetching}>
-          <FormattedMessage id="xpack.sessionView.loadNext" defaultMessage="Load next" />,
+          <FormattedMessage id="xpack.sessionView.loadNext" defaultMessage="Load next" />
         </EuiButton>
       )}
     </div>
