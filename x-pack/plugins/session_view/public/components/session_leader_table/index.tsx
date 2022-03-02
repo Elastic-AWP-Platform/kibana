@@ -27,8 +27,9 @@ import {
 import { TGridState } from '../../../../timelines/public';
 
 export interface SessionLeaderTableProps {
-  start?: string;
-  end?: string;
+  start: string;
+  end: string;
+  kuery?: string;
   indexNames?: string[];
   defaultColumns?: ColumnHeaderOptions[];
   onStateChange?: (state: TGridState) => void;
@@ -82,22 +83,15 @@ const DEFAULT_COLUMNS: ColumnHeaderOptions[] = [
   },
 ];
 
-// Start date is 7 days ago
-const startDate = new Date();
-startDate.setDate(new Date().getDate() - 7);
-const DEFAULT_END_DATE = new Date().toISOString();
-const DEFAULT_START_DATE = startDate.toISOString();
-
 const DEFAULT_INDEX_NAMES = [PROCESS_EVENTS_INDEX];
-
 const DEFAULT_ITEMS_PER_PAGE = [10, 25, 50];
-
 const NO_ROW_RENDERERS: RowRenderer[] = [];
 
 export const SessionLeaderTable = (props: SessionLeaderTableProps) => {
   const {
-    start = DEFAULT_START_DATE,
-    end = DEFAULT_END_DATE,
+    start,
+    end,
+    kuery = '',
     indexNames = DEFAULT_INDEX_NAMES,
     defaultColumns = DEFAULT_COLUMNS,
     onStateChange = () => {},
@@ -299,7 +293,9 @@ export const SessionLeaderTable = (props: SessionLeaderTableProps) => {
       footerText: 'Session Entry Leaders',
       onStateChange: handleStateChange,
       query: {
-        query: 'process.is_entry_leader: true and process.entry_leader.interactive: true',
+        query: `${
+          kuery ? `${kuery} and ` : ''
+        }process.is_entry_leader: true and process.entry_leader.interactive: true`,
         language: 'kuery',
       },
       renderCellValue,

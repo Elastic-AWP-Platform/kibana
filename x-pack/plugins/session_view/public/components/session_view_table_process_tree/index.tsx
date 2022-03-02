@@ -13,13 +13,9 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { useKibana } from '../../../../../../src/plugins/kibana_react/public';
 import { ActionProps } from '../../../../timelines/common';
 import { SESSION_ENTRY_LEADERS_ROUTE } from '../../../common/constants';
+import { SessionViewTableProcessTreeProps } from '../../types';
 import { SessionLeaderTable } from '../session_leader_table';
 import { SessionView } from '../session_view';
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface SessionViewTableProcessTreeProps {
-  // TODO: Not sure how we want to allow other plugins to modifiy this
-}
 
 // Initializing react-query
 const queryClient = new QueryClient();
@@ -76,7 +72,7 @@ export const SessionViewTableProcessTreeContent = (props: SessionViewTableProces
     );
   }
 
-  return <SessionLeaderTable onOpenSessionViewer={handleOpenSessionViewer} />;
+  return <SessionLeaderTable {...props} onOpenSessionViewer={handleOpenSessionViewer} />;
 };
 
 export const SessionViewTableProcessTree = (props: SessionViewTableProcessTreeProps) => {

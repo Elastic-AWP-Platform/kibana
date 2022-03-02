@@ -16,6 +16,14 @@ export type SessionViewServices = CoreStart & {
   timelines: TimelinesUIStart;
 };
 
+export interface SessionViewTableProcessTreeProps {
+  // expects an ISO 8601 string
+  start: string;
+  // expects an ISO 8601 string
+  end: string;
+  kuery?: string;
+}
+
 export interface EuiTabProps {
   id: string;
   name: string;
