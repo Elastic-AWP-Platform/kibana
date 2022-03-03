@@ -148,6 +148,12 @@ export function ProcessTreeNode({
               <EuiIcon type={sessionIcon} /> <b css={styles.darkText}>{name || args[0]}</b>{' '}
               <FormattedMessage id="xpack.sessionView.startedBy" defaultMessage="started by" />{' '}
               <EuiIcon type="user" /> <b css={styles.darkText}>{user.name}</b>
+              <SessionLeaderButton
+                process={process}
+                childCount={childCount}
+                onClick={onShowGroupLeaderOnlyClick}
+                showGroupLeadersOnly={showGroupLeadersOnly}
+              />
             </>
           ) : (
             <span>
@@ -176,14 +182,6 @@ export function ProcessTreeNode({
                 defaultMessage="Root escalation"
               />
             </EuiButton>
-          )}
-          {isSessionLeader && (
-            <SessionLeaderButton
-              process={process}
-              childCount={childCount}
-              onClick={onShowGroupLeaderOnlyClick}
-              showGroupLeadersOnly={showGroupLeadersOnly}
-            />
           )}
           {!isSessionLeader && childCount > 0 && (
             <ChildrenProcessesButton isExpanded={childrenExpanded} onToggle={onChildrenToggle} />
