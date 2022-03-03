@@ -179,7 +179,7 @@ export function ProcessTreeNode({
       exit_code: exitCode,
     } = process.getDetails().process;
 
-    const timeStampsNormal = moment(process.getDetails().process.start).format('MMM DD, YYYY @ hh:mm:ss.SSS') //Feb 28, 2022 @ 22:37:30:520 
+    const timeStampsNormal = moment(process.getDetails().process.start).format('MMM DD, YYYY @ hh:mm:ss.SSS') 
 
     if (hasExec) {
       return (

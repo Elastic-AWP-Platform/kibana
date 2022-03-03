@@ -242,6 +242,8 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
        display={isOptionDropdownOpen ? "base" : "empty"}
        onClick={toggleOptionButton}
        size="m"
+       aria-label="Option"
+       data-test-subj="sessionViewOptionButton"
      />
     </EuiFlexItem>
   ) 
@@ -262,7 +264,7 @@ export const SessionView = ({ sessionEntityId, height, jumpToEvent}: SessionView
           />
         </EuiFlexItem>
 
-      <EuiFlexItem grow={false} data-test-subj="sessionViewOptionButton" css={styles.buttonsEyeDetail}>
+      <EuiFlexItem grow={false} css={styles.buttonsEyeDetail}>
         {renderOptionToggleDropDown()}
       </EuiFlexItem>
 
