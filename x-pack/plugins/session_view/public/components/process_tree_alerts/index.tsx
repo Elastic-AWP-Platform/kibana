@@ -5,15 +5,8 @@
  * 2.0.
  */
 
-import React, { useMemo } from 'react';
-import {
-  EuiButton,
-  EuiText,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiHorizontalRule,
-  EuiSpacer,
-} from '@elastic/eui';
+import React from 'react';
+import { EuiButton, EuiText, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { useStyles } from './styles';
 import { ProcessEvent } from '../../../common/types/process_tree';
