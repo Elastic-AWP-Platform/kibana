@@ -36,13 +36,14 @@ export const SessionLeaderButton = ({
   process,
   onClick,
   showGroupLeadersOnly,
+  childCount,
 }: {
   process: Process;
   onClick: () => void;
   showGroupLeadersOnly: boolean;
+  childCount: number;
 }) => {
   const groupLeaderCount = process.getChildren(false).length;
-  const childCount = process.getChildren(true).length;
   const sameGroupCount = childCount - groupLeaderCount;
   const { button, buttonArrow, getExpandedIcon } = useButtonStyles();
 

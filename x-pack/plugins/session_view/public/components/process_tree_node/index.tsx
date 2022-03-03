@@ -180,6 +180,7 @@ export function ProcessTreeNode({
           {isSessionLeader && (
             <SessionLeaderButton
               process={process}
+              childCount={childCount}
               onClick={onShowGroupLeaderOnlyClick}
               showGroupLeadersOnly={showGroupLeadersOnly}
             />
