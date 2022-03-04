@@ -10,37 +10,38 @@ import { useEuiTheme, transparentize } from '@elastic/eui';
 import { CSSObject } from '@emotion/react';
 
 interface StylesDeps {
-  display: string | undefined;
+  isInvestigated: boolean;
 }
 
-export const useStyles = ({ display }: StylesDeps) => {
+export const useStyles = ({ isInvestigated }: StylesDeps) => {
   const { euiTheme } = useEuiTheme();
 
   const cached = useMemo(() => {
-    const item: CSSObject = {
-      display,
-      alignItems: 'center',
-      padding: euiTheme.size.s,
-      width: '100%',
-      fontSize: 'inherit',
-      fontWeight: 'inherit',
-      minHeight: '36px',
+    const { colors } = euiTheme;
+
+    const dangerBorder = transparentize(colors.danger, 0.2);
+    const borderColor = isInvestigated ? dangerBorder : colors.lightShade;
+
+    const alertItem: CSSObject = {
+      border: `1px solid ${borderColor}`,
     };
 
-    const copiableItem: CSSObject = {
-      ...item,
-      position: 'relative',
-      borderRadius: euiTheme.border.radius.medium,
-      '&:hover': {
-        background: transparentize(euiTheme.colors.primary, 0.1),
-      },
+    const processArgs: CSSObject = {
+      border: `1px solid ${colors.lightShade}`,
+    };
+
+    const investigatedLabel: CSSObject = {
+      color: colors.dangerText,
+      border: `1px solid ${colors.danger}`,
+      backgroundColor: dangerBorder,
     };
 
     return {
-      item,
-      copiableItem,
+      alertItem,
+      processArgs,
+      investigatedLabel,
     };
-  }, [display, euiTheme]);
+  }, [euiTheme, isInvestigated]);
 
   return cached;
 };

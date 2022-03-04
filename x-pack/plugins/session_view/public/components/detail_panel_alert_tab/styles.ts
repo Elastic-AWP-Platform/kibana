@@ -14,6 +14,7 @@ export const useStyles = () => {
 
   const cached = useMemo(() => {
     const container: CSSObject = {
+      padding: euiTheme.size.s,
     };
 
     return {
