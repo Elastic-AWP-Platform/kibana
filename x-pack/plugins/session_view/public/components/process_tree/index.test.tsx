@@ -38,6 +38,44 @@ describe('ProcessTree component', () => {
       expect(renderResult.queryAllByTestId('sessionView:processTreeNode')).toBeTruthy();
     });
 
+    it('When Verbose mode is OFF, it shouldn;t show all childrens', () => {
+      renderResult = mockedContext.render(
+        <ProcessTree
+          sessionEntityId="3d0192c6-7c54-5ee6-a110-3539a7cf42bc"
+          data={mockData}
+          isFetching={false}
+          fetchNextPage={() => true}
+          hasNextPage={false}
+          fetchPreviousPage={() => true}
+          hasPreviousPage={false}
+          onProcessSelected={jest.fn()}
+          timeStampOn= {true}
+          verboseModeOn= {false}
+        />
+      );
+      expect(renderResult.queryByText('/usr/bin/cat')).toBeFalsy();
+      expect(renderResult.getByText('cmd/config.ini')).toBeTruthy();
+    });
+
+    it('When Verbose mode is ON, it should show all childrens', () => {
+      renderResult = mockedContext.render(
+        <ProcessTree
+          sessionEntityId="3d0192c6-7c54-5ee6-a110-3539a7cf42bc"
+          data={mockData}
+          isFetching={false}
+          fetchNextPage={() => true}
+          hasNextPage={false}
+          fetchPreviousPage={() => true}
+          hasPreviousPage={false}
+          onProcessSelected={jest.fn()}
+          timeStampOn= {true}
+          verboseModeOn= {true}
+        />
+      );
+      expect(renderResult.queryByText('/usr/bin/cat')).toBeTruthy();
+      expect(renderResult.queryByText('cmd/config.ini')).toBeTruthy();
+    });
+
     it('should insert a DOM element used to highlight a process when selectedProcess is set', () => {
       const mockSelectedProcess = new ProcessImpl(mockData[0].events[0].process.entity_id);
 
@@ -52,11 +90,12 @@ describe('ProcessTree component', () => {
           hasPreviousPage={false}
           selectedProcess={mockSelectedProcess}
           onProcessSelected={jest.fn()}
+          verboseModeOn= {true}
         />
       );
 
       // click on view more button
-      renderResult.getByTestId('sessionView:processTreeNodeChildProcessesButton').click();
+      //renderResult.getByTestId('sessionView:processTreeNodeChildProcessesButton').click();
 
       expect(
         renderResult

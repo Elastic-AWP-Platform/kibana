@@ -37,8 +37,8 @@ export function ProcessTreeNode({
   isSessionLeader = false,
   depth = 0,
   onProcessSelected,
-  timeStampOn = true,
-  verboseModeOn = true
+  timeStampOn,
+  verboseModeOn=true
 }: ProcessDeps) {
   const textRef = useRef<HTMLSpanElement>(null);
 

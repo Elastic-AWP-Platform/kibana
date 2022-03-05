@@ -108,15 +108,6 @@ describe('SessionView component', () => {
         expect(renderResult.getByText('Timestamp')).toBeTruthy();
         expect(renderResult.getByText('Verbose mode')).toBeTruthy();
       });
-
-      it('Test clicking options', async () => {
-        render();
-        await waitForApiCall();
-        userEvent.click(renderResult.getByTestId('sessionViewOptionButton'));
-        userEvent.click(renderResult.getByText('Verbose mode'));
-        expect(renderResult.getByText('Display options')).toBeTruthy();
-        expect(renderResult.getByTestId('sessionVdsdsiewOptionButton')).toBeTruthy();
-      });
     });
   });
 });
