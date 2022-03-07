@@ -38,7 +38,7 @@ describe('ProcessTree component', () => {
       expect(renderResult.queryAllByTestId('sessionView:processTreeNode')).toBeTruthy();
     });
 
-    it('When Verbose mode is OFF, it shouldn;t show all childrens', () => {
+    it('When Verbose mode is OFF, it should not show all childrens', () => {
       renderResult = mockedContext.render(
         <ProcessTree
           sessionEntityId="3d0192c6-7c54-5ee6-a110-3539a7cf42bc"
@@ -53,8 +53,8 @@ describe('ProcessTree component', () => {
           verboseModeOn= {false}
         />
       );
-      expect(renderResult.queryByText('/usr/bin/cat')).toBeFalsy();
-      expect(renderResult.getByText('cmd/config.ini')).toBeTruthy();
+      expect(renderResult.queryByText('cat')).toBeFalsy();
+      expect(renderResult.queryByText('cmd/config.ini')).toBeTruthy();
     });
 
     it('When Verbose mode is ON, it should show all childrens', () => {
@@ -72,8 +72,8 @@ describe('ProcessTree component', () => {
           verboseModeOn= {true}
         />
       );
-      expect(renderResult.queryByText('/usr/bin/cat')).toBeTruthy();
-      expect(renderResult.queryByText('cmd/config.ini')).toBeTruthy();
+      expect(renderResult.queryByText('cat')).toBeTruthy();
+      expect(renderResult.queryAllByText('cmd/config.ini')).toBeTruthy();
     });
 
     it('should insert a DOM element used to highlight a process when selectedProcess is set', () => {

@@ -534,7 +534,7 @@ export const mockEvents: ProcessEvent[] = [
     start: '2021-11-23T15:25:05.202Z',
     name: '',
     args_count: 2,
-    args: ['vi', 'cmd/config.ini'],
+    args: ['cat'],
     working_directory: '/home/vagrant',
   },
   event: {
