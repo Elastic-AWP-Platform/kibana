@@ -146,7 +146,7 @@ export const DetailPanelProcessTab = ({ processDetail }: DetailPanelProcessTabDe
   });
 
   const processArgs = processDetail.args.length
-    ? `[${processDetail.args.map((arg) => `'${arg}'`)}]`
+    ? `[${processDetail.args.map((arg) => arg.split(' ').filter((part) => part !== '').map((argPart) =>`'${argPart}'`))}]`
     : '-';
 
   return (
