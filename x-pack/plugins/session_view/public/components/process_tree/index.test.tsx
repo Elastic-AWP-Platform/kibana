@@ -55,6 +55,12 @@ describe('ProcessTree component', () => {
       );
       expect(renderResult.queryByText('cat')).toBeFalsy();
       expect(renderResult.queryByText('cmd/config.ini')).toBeTruthy();
+
+      const selectionArea = renderResult.queryAllByTestId('sessionView:processTreeNode');
+      const result = selectionArea.map(a => a?.getAttribute('data-id'))
+
+      expect(result.includes('3d0192c6-7c54-5ee6-a110-3539a7cf42bc')).toBeTruthy()
+      expect(result.includes('7e4daeb2-4a4e-56c4-980e-f0dcfdbc3728')).toBeFalsy()
     });
 
     it('When Verbose mode is ON, it should show all childrens', () => {
@@ -74,6 +80,12 @@ describe('ProcessTree component', () => {
       );
       expect(renderResult.queryByText('cat')).toBeTruthy();
       expect(renderResult.queryAllByText('cmd/config.ini')).toBeTruthy();
+
+      const selectionArea = renderResult.queryAllByTestId('sessionView:processTreeNode');
+      const result = selectionArea.map(a => a?.getAttribute('data-id'))
+
+      expect(result.includes('3d0192c6-7c54-5ee6-a110-3539a7cf42bc')).toBeTruthy()
+      expect(result.includes('7e4daeb2-4a4e-56c4-980e-f0dcfdbc3728')).toBeTruthy()
     });
 
     it('should insert a DOM element used to highlight a process when selectedProcess is set', () => {
