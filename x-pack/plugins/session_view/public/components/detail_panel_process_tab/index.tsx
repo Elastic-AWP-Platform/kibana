@@ -70,7 +70,7 @@ export const DetailPanelProcessTab = ({ processDetail }: DetailPanelProcessTabDe
   ].map((leader, idx) => {
     const listItems: ListItems = [
       {
-        title: <DetailPanelListItem>id</DetailPanelListItem>,
+        title: <DetailPanelListItem>entity_id</DetailPanelListItem>,
         description: (
           <DetailPanelCopy textToCopy={leader.id}>
             <EuiTextColor color="subdued" css={styles.descriptionSemibold}>
