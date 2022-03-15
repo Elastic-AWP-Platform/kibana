@@ -211,7 +211,7 @@ export const DetailPanelProcessTab = ({ processDetail }: DetailPanelProcessTabDe
                 textToCopy={getProcessExecutableCopyText(processDetail.executable)}
                 display="block"
               >
-                {processDetail.executable.map((execTuple, idx) => {
+                {processDetail.executable.filter(([_, eventAction]) => ['fork', 'exec'].includes(eventAction)).map((execTuple, idx) => {
                   const [executable, eventAction] = execTuple;
                   return (
                     <div key={`executable-${idx}`} css={styles.description}>
